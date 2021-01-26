@@ -149,6 +149,7 @@ set(engine_SRCS # Except main.cpp.
     src/gcodeExport.cpp
     src/GCodePathConfig.cpp
     src/infill.cpp
+    src/InterlockingGenerator.cpp
     src/InsetOrderOptimizer.cpp
     src/layerPart.cpp
     src/LayerPlan.cpp
