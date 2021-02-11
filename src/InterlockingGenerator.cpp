@@ -93,7 +93,7 @@ void InterlockingGenerator::generateInterlockingStructure(std::vector<Slicer*>& 
     std::vector<std::vector<Polygon>> cell_area_per_extruder_per_layer;
     gen.generateMicrostructure(cell_area_per_extruder_per_layer);
 
-    gen.applyMicrostructureToOutlines(has_all_extruders, cell_area_per_extruder_per_layer);
+    gen.applyMicrostructureToOutlines(has_all_extruders, cell_area_per_extruder_per_layer, layer_regions);
 }
 
 InterlockingGenerator::Cell::Cell()
@@ -189,7 +189,7 @@ void InterlockingGenerator::generateMicrostructure(std::vector<std::vector<Polyg
     }
 }
 
-void InterlockingGenerator::applyMicrostructureToOutlines(const std::unordered_set<GridPoint3>& cells, std::vector<std::vector<Polygon>>& cell_area_per_extruder_per_layer)
+void InterlockingGenerator::applyMicrostructureToOutlines(const std::unordered_set<GridPoint3>& cells, std::vector<std::vector<Polygon>>& cell_area_per_extruder_per_layer, const std::vector<Polygons>& layer_regions)
 {
     PointMatrix unapply_rotation = rotation.inverse();
 
@@ -216,6 +216,9 @@ void InterlockingGenerator::applyMicrostructureToOutlines(const std::unordered_s
                 areas_here.add(area_here);
                 Polygons areas_other;
                 areas_other.add(area_other);
+
+                const Polygons& layer_region = layer_regions[layer_nr];
+                areas_here = layer_region.intersection(areas_here);
 
                 areas_here.applyMatrix(unapply_rotation);
                 areas_other.applyMatrix(unapply_rotation);
