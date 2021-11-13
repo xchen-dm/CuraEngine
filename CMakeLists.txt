@@ -42,17 +42,18 @@ set(engine_SRCS # Except main.cpp.
         src/layerPart.cpp
         src/LayerPlan.cpp
         src/LayerPlanBuffer.cpp
-        src/MergeInfillLines.cpp
         src/mesh.cpp
         src/MeshGroup.cpp
         src/Mold.cpp
         src/multiVolumes.cpp
+        src/PathOrderOptimizer.cpp
         src/PathOrder.cpp
-        src/pathOrderOptimizer.cpp
         src/Preheat.cpp
         src/PrimeTower.cpp
         src/raft.cpp
         src/Scene.cpp
+        src/SkeletalTrapezoidation.cpp
+        src/SkeletalTrapezoidationGraph.cpp
         src/skin.cpp
         src/SkirtBrim.cpp
         src/SupportInfillPart.cpp
@@ -64,9 +65,19 @@ set(engine_SRCS # Except main.cpp.
         src/TopSurface.cpp
         src/TreeSupport.cpp
         src/WallsComputation.cpp
-        src/wallOverlap.cpp
         src/Weaver.cpp
         src/Wireframe2gcode.cpp
+        src/WallToolPaths.cpp
+
+        src/BeadingStrategy/BeadingOrderOptimizer.cpp
+        src/BeadingStrategy/BeadingStrategy.cpp
+        src/BeadingStrategy/BeadingStrategyFactory.cpp
+        src/BeadingStrategy/CenterDeviationBeadingStrategy.cpp
+        src/BeadingStrategy/DistributedBeadingStrategy.cpp
+        src/BeadingStrategy/LimitedBeadingStrategy.cpp
+        src/BeadingStrategy/RedistributeBeadingStrategy.cpp
+        src/BeadingStrategy/WideningBeadingStrategy.cpp
+        src/BeadingStrategy/OuterWallInsetBeadingStrategy.cpp
 
         src/communication/ArcusCommunication.cpp
         src/communication/ArcusCommunicationPrivate.cpp
@@ -103,6 +114,9 @@ set(engine_SRCS # Except main.cpp.
         src/utils/AABB.cpp
         src/utils/AABB3D.cpp
         src/utils/Date.cpp
+        src/utils/ExtrusionJunction.cpp
+        src/utils/ExtrusionLine.cpp
+        src/utils/ExtrusionSegment.cpp
         src/utils/FMatrix4x3.cpp
         src/utils/gettime.cpp
         src/utils/getpath.cpp
@@ -113,15 +127,16 @@ set(engine_SRCS # Except main.cpp.
         src/utils/Point3.cpp
         src/utils/PolygonConnector.cpp
         src/utils/PolygonsPointIndex.cpp
-        src/utils/PolygonProximityLinker.cpp
+        src/utils/PolygonsSegmentIndex.cpp
         src/utils/polygonUtils.cpp
         src/utils/polygon.cpp
         src/utils/ProximityPointLink.cpp
         src/utils/SVG.cpp
         src/utils/socket.cpp
         src/utils/SquareGrid.cpp
+        src/utils/ToolpathVisualizer.cpp
+        src/utils/VoronoiUtils.cpp
         )
-
 add_library(_CuraEngine STATIC ${engine_SRCS} ${engine_PB_SRCS})
 use_threads(_CuraEngine)
 
@@ -177,7 +192,8 @@ endif()
 find_package(clipper REQUIRED)
 find_package(RapidJSON REQUIRED)
 find_package(stb REQUIRED)
-target_link_libraries(_CuraEngine PRIVATE clipper::clipper rapidjson::rapidjson stb::stb)
+find_package(boost REQUIRED)
+target_link_libraries(_CuraEngine PRIVATE clipper::clipper rapidjson::rapidjson stb::stb boost::boost)
 
 ### Compile the CLI ###
 if(WIN32)

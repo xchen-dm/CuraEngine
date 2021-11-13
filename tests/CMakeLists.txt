@@ -4,12 +4,23 @@ find_package(GTest CONFIG REQUIRED)
 
 # List of tests. For each test there must be a file tests/${NAME}.cpp.
 set(engine_TEST
+        ExtruderPlanTest
         GCodeExportTest
         InfillTest
         LayerPlanTest
-        MergeInfillLinesTest
+        PathOrderOptimizerTest
         PathOrderMonotonicTest
         TimeEstimateCalculatorTest
+        WallsComputationTest
+        )
+set(engine_TEST_ARCUS
+        ArcusCommunicationTest
+        ArcusCommunicationPrivateTest
+        )
+set(engine_TEST_BEADING_STRATEGY
+        CenterDeviationBeadingStrategyTest
+        )
+set(engine_TEST_INFILL
         )
 set(engine_TEST_INTEGRATION
         SlicePhaseTest
@@ -17,13 +28,10 @@ set(engine_TEST_INTEGRATION
 set(engine_TEST_SETTINGS
         SettingsTest
         )
-set(engine_TEST_ARCUS
-        ArcusCommunicationTest
-        ArcusCommunicationPrivateTest
-        )
 set(engine_TEST_UTILS
         AABBTest
         AABB3DTest
+        ExtrusionLineTest
         IntPointTest
         LinearAlg2DTest
         MinimumSpanningTreeTest

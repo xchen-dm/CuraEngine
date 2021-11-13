@@ -10,7 +10,7 @@ required_conan_version = ">=1.42"
 
 class CuraEngineConan(ConanFile):
     name = "curaengine"
-    version = "4.13.0"
+    version = "99.9.2-alpha+001"
     license = "AGPL-3.0"
     author = "Ultimaker B.V."
     url = "https://github.com/Ultimaker/CuraEngine"
@@ -22,8 +22,6 @@ class CuraEngineConan(ConanFile):
     default_user = "ultimaker"
     default_channel = "testing"
     exports = "LICENSE*"
-    python_requires = ["UltimakerBase/0.1@ultimaker/testing"]
-    python_requires_extend = "UltimakerBase.UltimakerBase"
     options = {
         "enable_arcus": [True, False],
         "enable_openmp": [True, False],
@@ -64,6 +62,7 @@ class CuraEngineConan(ConanFile):
             self.requires("protobuf/3.17.1")
         self.requires("clipper/6.4.2")
         self.requires("rapidjson/1.1.0")
+        self.requires("boost/1.70.0")
 
     def validate(self):
         if self.settings.compiler.get_safe("cppstd"):
