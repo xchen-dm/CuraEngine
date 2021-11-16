@@ -40,21 +40,18 @@ class CuraEngineConan(ConanFile):
     }
 
     def config_options(self):
-        if self.options.enable_arcus:
-            if self.settings.os == "Macos":
-                self.options["protobuf"].shared = False
-            else:
-                self.options["protobuf"].shared = self.options.shared
+        if self.settings.os == "Macos":
+            self.options.enable_openmp = False
 
     def configure(self):
         if self.options.enable_arcus:
             self.options["arcus"].shared = True
+            self.options["protobuf"].shared = self.settings.os != "Macos"
         self.options["clipper"].shared = True
-        if self.settings.os == "Macos":
-            self.options.enable_openmp = False
 
     def build_requirements(self):
-        self.build_requires("protobuf/3.17.1")
+        if self.options.enable_arcus:
+            self.build_requires("protobuf/3.17.1")
         if self.options.tests:
             self.build_requires("gtest/[>=1.10.0]", force_host_context = True)
 
