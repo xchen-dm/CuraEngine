@@ -10,7 +10,7 @@ required_conan_version = ">=1.42"
 
 class CuraEngineConan(ConanFile):
     name = "curaengine"
-    version = "4.13.0-alpha+001"
+    version = "4.13.0"
     license = "AGPL-3.0"
     author = "Ultimaker B.V."
     url = "https://github.com/Ultimaker/CuraEngine"
@@ -22,6 +22,8 @@ class CuraEngineConan(ConanFile):
     default_user = "ultimaker"
     default_channel = "testing"
     exports = "LICENSE*"
+    python_requires = ["UltimakerBase/0.1@ultimaker/testing"]
+    python_requires_extend = "UltimakerBase.UltimakerBase"
     options = {
         "enable_arcus": [True, False],
         "enable_openmp": [True, False],
