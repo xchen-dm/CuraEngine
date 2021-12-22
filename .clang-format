@@ -67,14 +67,14 @@ IncludeIsMainRegex: (Test)?$
 IndentCaseLabels: false
 IndentWidth: 4
 IndentWrappedFunctionNames: true
-JavaScriptQuotes: Leave
+JavaScriptQuotes: Double
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 Language: Cpp
 MacroBlockBegin: ''
 MacroBlockEnd: ''
 MaxEmptyLinesToKeep: 2
-NamespaceIndentation: Inner
+NamespaceIndentation: None
 ObjCBlockIndentWidth: 7
 ObjCSpaceAfterProperty: true
 ObjCSpaceBeforeProtocolList: false
@@ -93,6 +93,6 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: c++20
+Standard: c++17
 TabWidth: 4
 UseTab: Never
