@@ -19,7 +19,7 @@ if (ENABLE_ARCUS)
     message(STATUS "Building with Arcus")
 
     find_package(arcus REQUIRED)
-    find_package(Protobuf 3.17.1 REQUIRED)
+    find_package(protobuf 3.17.1 REQUIRED)
 
     protobuf_generate_cpp(engine_PB_SRCS engine_PB_HEADERS Cura.proto)
 endif ()
@@ -187,7 +187,7 @@ if(ENABLE_OPENMP)
 endif()
 
 if(ENABLE_ARCUS)
-    target_link_libraries(_CuraEngine PRIVATE arcus::arcus protobuf::libprotobuf)
+    target_link_libraries(_CuraEngine PRIVATE arcus::arcus protobuf::protobuf)
 endif()
 
 find_package(clipper REQUIRED)

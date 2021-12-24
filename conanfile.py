@@ -6,7 +6,7 @@ from conan.tools.cmake import CMakeToolchain, CMakeDeps, CMake
 from conan.tools.layout import cmake_layout
 from conan.tools.files import AutoPackager
 
-required_conan_version = ">=1.42"
+required_conan_version = ">=1.43"
 
 class CuraEngineConan(ConanFile):
     name = "curaengine"
