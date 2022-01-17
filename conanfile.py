@@ -1,12 +1,13 @@
 import os
 import pathlib
 
-from conans import ConanFile, tools
+from conan import ConanFile
+from conans import tools
 from conan.tools.cmake import CMakeToolchain, CMakeDeps, CMake
 from conan.tools.layout import cmake_layout
 from conan.tools.files import AutoPackager
 
-required_conan_version = ">=1.43"
+required_conan_version = ">=1.44.1"
 
 class CuraEngineConan(ConanFile):
     name = "curaengine"
