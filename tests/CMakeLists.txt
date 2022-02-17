@@ -4,6 +4,7 @@ find_package(GTest CONFIG REQUIRED)
 
 # List of tests. For each test there must be a file tests/${NAME}.cpp.
 set(engine_TEST
+        ClipperTest
         ExtruderPlanTest
         GCodeExportTest
         InfillTest

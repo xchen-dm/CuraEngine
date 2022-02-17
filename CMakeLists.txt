@@ -131,7 +131,8 @@ set(engine_SRCS # Except main.cpp.
         src/utils/PolygonsSegmentIndex.cpp
         src/utils/polygonUtils.cpp
         src/utils/polygon.cpp
-        src/utils/PolylineStitcher.cppsrc/utils/ProximityPointLink.cpp
+        src/utils/PolylineStitcher.cpp
+        src/utils/ProximityPointLink.cpp
         src/utils/SVG.cpp
         src/utils/socket.cpp
         src/utils/SquareGrid.cpp
@@ -193,7 +194,7 @@ endif()
 find_package(clipper REQUIRED)
 find_package(RapidJSON REQUIRED)
 find_package(stb REQUIRED)
-find_package(boost REQUIRED)
+find_package(Boost REQUIRED)
 target_link_libraries(_CuraEngine PRIVATE clipper::clipper rapidjson::rapidjson stb::stb boost::boost)
 
 ### Compile the CLI ###
