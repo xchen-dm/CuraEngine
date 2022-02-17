@@ -70,7 +70,7 @@ set(engine_SRCS # Except main.cpp.
         src/Wireframe2gcode.cpp
         src/WallToolPaths.cpp
 
-        src/BeadingStrategy/BeadingOrderOptimizer.cpp
+
         src/BeadingStrategy/BeadingStrategy.cpp
         src/BeadingStrategy/BeadingStrategyFactory.cpp
         src/BeadingStrategy/CenterDeviationBeadingStrategy.cpp
@@ -131,7 +131,7 @@ set(engine_SRCS # Except main.cpp.
         src/utils/PolygonsSegmentIndex.cpp
         src/utils/polygonUtils.cpp
         src/utils/polygon.cpp
-        src/utils/ProximityPointLink.cpp
+        src/utils/PolylineStitcher.cppsrc/utils/ProximityPointLink.cpp
         src/utils/SVG.cpp
         src/utils/socket.cpp
         src/utils/SquareGrid.cpp

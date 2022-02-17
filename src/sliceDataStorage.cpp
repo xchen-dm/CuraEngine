@@ -138,6 +138,11 @@ bool SliceMeshStorage::getExtruderIsUsed(const size_t extruder_nr) const
             return false;
         }
     }
+    if (settings.get<ESurfaceMode>("magic_mesh_surface_mode") != ESurfaceMode::NORMAL
+        && settings.get<ExtruderTrain&>("wall_0_extruder_nr").extruder_nr == extruder_nr)
+    {
+        return true;
+    }
     if (settings.get<size_t>("wall_line_count") > 0 && settings.get<ExtruderTrain&>("wall_0_extruder_nr").extruder_nr == extruder_nr)
     {
         return true;
@@ -191,6 +196,13 @@ bool SliceMeshStorage::getExtruderIsUsed(const size_t extruder_nr, const LayerIn
                 }
             }
         }
+    }
+    if (settings.get<ESurfaceMode>("magic_mesh_surface_mode") != ESurfaceMode::NORMAL
+        && settings.get<ExtruderTrain&>("wall_0_extruder_nr").extruder_nr == extruder_nr
+        && layer.openPolyLines.size() > 0
+    )
+    {
+        return true;
     }
     if ((settings.get<size_t>("wall_line_count") > 1 || settings.get<bool>("alternate_extra_perimeter")) && settings.get<ExtruderTrain&>("wall_x_extruder_nr").extruder_nr == extruder_nr)
     {
@@ -388,8 +400,12 @@ std::vector<bool> SliceDataStorage::getExtrudersUsed() const
     else if(adhesion_type == EPlatformAdhesion::RAFT)
     {
         ret[mesh_group_settings.get<ExtruderTrain&>("raft_base_extruder_nr").extruder_nr] = true;
-        ret[mesh_group_settings.get<ExtruderTrain&>("raft_interface_extruder_nr").extruder_nr] = true;
-        const size_t num_surface_layers = mesh_group_settings.get<ExtruderTrain&>("adhesion_extruder_nr").settings.get<size_t>("raft_surface_layers");
+        const size_t num_interface_layers = mesh_group_settings.get<ExtruderTrain&>("raft_interface_extruder_nr").settings.get<size_t>("raft_interface_layers");
+        if(num_interface_layers > 0)
+        {
+            ret[mesh_group_settings.get<ExtruderTrain&>("raft_interface_extruder_nr").extruder_nr] = true;
+        }
+        const size_t num_surface_layers = mesh_group_settings.get<ExtruderTrain&>("raft_surface_extruder_nr").settings.get<size_t>("raft_surface_layers");
         if(num_surface_layers > 0)
         {
             ret[mesh_group_settings.get<ExtruderTrain&>("raft_surface_extruder_nr").extruder_nr] = true;
