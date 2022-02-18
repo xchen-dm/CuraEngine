@@ -61,7 +61,7 @@ class CuraEngineConan(ConanFile):
     def requirements(self):
         self.requires("stb/20200203")
         if self.options.enable_arcus:
-            self.requires(f"arcus/5.0.0-a+7924.90cf4a@ultimaker/testing")
+            self.requires("arcus/5.0.0-a+7924.bce2f4@ultimaker/testing")
             self.requires("protobuf/3.17.1")
         self.requires("clipper/6.4.2")
         self.requires("rapidjson/1.1.0")
