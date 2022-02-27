@@ -23,7 +23,7 @@ class CuraEngineConan(ConanFile):
     default_user = "ultimaker"
     default_channel = "testing"
     exports = "LICENSE*"
-    python_requires = ["UltimakerBase/0.1@ultimaker/testing"]
+    python_requires = ["UltimakerBase/0.2@ultimaker/testing"]
     python_requires_extend = "UltimakerBase.UltimakerBase"
     options = {
         "enable_arcus": [True, False],
@@ -72,7 +72,7 @@ class CuraEngineConan(ConanFile):
             tools.check_min_cppstd(self, 17)
 
     def layout(self):
-        cmake_layout(self)
+        self.ultimaker_layout(self)
 
     def generate(self):
         cmake = CMakeDeps(self)
