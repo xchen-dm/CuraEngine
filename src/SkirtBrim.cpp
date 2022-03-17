@@ -194,8 +194,6 @@ void SkirtBrim::generate()
     
     // const correctness
     
-    // fix printing order
-    
     // documentation
     
     // frontend stuff
