@@ -10,7 +10,7 @@
 #include <chrono> // milliseconds
 #include <optional>
 
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "utils/Lock.h"
 
 namespace cura
@@ -129,7 +129,7 @@ void GcodeLayerThreader<T>::run()
     {
 #ifdef _OPENMP
         #pragma omp master
-        log("Multithreading GcodeLayerThreader with %i threads.\n", omp_get_num_threads());
+        spdlog::get("console")->info("Multithreading GcodeLayerThreader with {} threads.", omp_get_num_threads());
 #endif // _OPENMP
         while (true)
         {

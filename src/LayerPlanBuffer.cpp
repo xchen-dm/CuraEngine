@@ -9,7 +9,7 @@
 #include "LayerPlanBuffer.h"
 #include "Slice.h"
 #include "communication/Communication.h" //To flush g-code through the communication channel.
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura {
 
@@ -80,7 +80,7 @@ void LayerPlanBuffer::addConnectingTravelMove(LayerPlan* prev_layer, const Layer
 
     if (!new_layer_destination_state)
     {
-        logWarning("Layer %d is empty (or it has empty extruder plans). Temperature control and cross layer travel moves might suffer!\n", newest_layer->layer_nr);
+        spdlog::get("console")->warn("Layer {} is empty (or it has empty extruder plans). Temperature control and cross layer travel moves might suffer!", newest_layer->layer_nr);
         return;
     }
 
@@ -219,7 +219,7 @@ void LayerPlanBuffer::handleStandbyTemp(std::vector<ExtruderPlan*>& extruder_pla
             return;
         }
     }
-    logWarning("Warning: Couldn't find previous extruder plan so as to set the standby temperature. Inserting temp command in earliest available layer.\n");
+    spdlog::get("console")->warn("Warning: Couldn't find previous extruder plan so as to set the standby temperature. Inserting temp command in earliest available layer.");
     ExtruderPlan& earliest_extruder_plan = *extruder_plans[0];
     constexpr bool wait = false;
     earliest_extruder_plan.insertCommand(0, extruder, standby_temp, wait);
@@ -307,7 +307,7 @@ void LayerPlanBuffer::insertPrintTempCommand(ExtruderPlan& extruder_plan)
 {
     if (!extruder_plan.extrusion_temperature)
     {
-        logWarning("Empty extruder plan detected! Discarding extrusion temperature command.\n");
+        spdlog::get("console")->warn("Empty extruder plan detected! Discarding extrusion temperature command.");
         return;
     }
     const double print_temp = *extruder_plan.extrusion_temperature;
@@ -392,7 +392,7 @@ void LayerPlanBuffer::insertFinalPrintTempCommand(std::vector<ExtruderPlan*>& ex
         }
         if (time_window <= 0.0) //There was a move in this plan but it was length 0.
         {
-            logWarning("Unnecessary extruder switch detected! SliceDataStorage::getExtrudersUsed should probably be updated.\n");
+            spdlog::get("console")->warn("Unnecessary extruder switch detected! SliceDataStorage::getExtrudersUsed should probably be updated.");
             return;
         }
         weighted_average_extrusion_temp /= time_window;
@@ -402,7 +402,7 @@ void LayerPlanBuffer::insertFinalPrintTempCommand(std::vector<ExtruderPlan*>& ex
 
     if (!initial_print_temp)
     { // none of the extruder plans had unretracted moves
-        logWarning("Unnecessary extruder switch detected! Discarding final print temperature commands.\n");
+        spdlog::get("console")->warn("Unnecessary extruder switch detected! Discarding final print temperature commands.");
         return;
     }
 
@@ -502,7 +502,7 @@ void LayerPlanBuffer::insertTempCommands()
             assert(extruder_plan.estimates.getMaterial() == 0.0 && "No extrusion time should mean no material usage!");
             if (extruder_settings.get<bool>("material_flow_dependent_temperature")) //Average flow is only used with flow dependent temperature.
             {
-                logWarning("Empty extruder plans detected! Temperature control might suffer.\n");
+                spdlog::get("console")->warn("Empty extruder plans detected! Temperature control might suffer.");
             }
             avg_flow = 0.0;
         }

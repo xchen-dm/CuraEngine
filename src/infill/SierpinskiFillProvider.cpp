@@ -6,7 +6,7 @@
 #include "UniformDensityProvider.h"
 #include "SierpinskiFillProvider.h"
 #include "../utils/AABB3D.h"
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "../utils/math.h"
 #include "../utils/polygon.h"
 
@@ -47,7 +47,7 @@ Polygon SierpinskiFillProvider::generate(EFillMethod pattern, coord_t z, coord_t
     else
     {
         Polygon ret;
-        logError("Different density sierpinski fill for different layers is not implemented yet!\n");
+        spdlog::get("console")->error("Different density sierpinski fill for different layers is not implemented yet!");
         std::exit(-1);
         return ret;
     }

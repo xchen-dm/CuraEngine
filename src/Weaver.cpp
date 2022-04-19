@@ -11,7 +11,7 @@
 #include "Weaver.h"
 #include "communication/Communication.h" //To send layer view data.
 #include "progress/Progress.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "settings/AdaptiveLayerHeights.h"
 #include "settings/types/Angle.h"
 
@@ -30,7 +30,7 @@ void Weaver::weave(MeshGroup* meshgroup)
     const size_t layer_count = (maxz - initial_layer_thickness) / connection_height + 1;
     std::vector<AdaptiveLayer> layer_thicknesses;
 
-    log("Layer count: %i\n", layer_count);
+    spdlog::get("console")->info("Layer count: {}", layer_count);
 
     std::vector<cura::Slicer*> slicerList;
 
@@ -54,11 +54,11 @@ void Weaver::weave(MeshGroup* meshgroup)
         }
         if (starting_layer_idx > 0)
         {
-            logWarning("First %i layers are empty!\n", starting_layer_idx);
+            spdlog::get("console")->warn("First {} layers are empty!", starting_layer_idx);
         }
     }
 
-    log("Chainifying layers...\n");
+    spdlog::get("console")->info("Chainifying layers...");
     {
         int starting_z = -1;
         for (cura::Slicer* slicer : slicerList)
@@ -117,7 +117,7 @@ void Weaver::weave(MeshGroup* meshgroup)
         }
     }
 
-    log("Finding horizontal parts...\n");
+    spdlog::get("console")->info("Finding horizontal parts...");
     {
         Progress::messageProgressStage(Progress::Stage::SUPPORT, nullptr);
         for (unsigned int layer_idx = 0; layer_idx < wireFrame.layers.size(); layer_idx++)
@@ -135,7 +135,7 @@ void Weaver::weave(MeshGroup* meshgroup)
     // at this point layer.supported still only contains the polygons to be connected
     // when connecting layers, we further add the supporting polygons created by the roofs
 
-    log("Connecting layers...\n");
+    spdlog::get("console")->info("Connecting layers...");
     {
         Polygons* lower_top_parts = &wireFrame.bottom_outline;
         int last_z = wireFrame.z_bottom;

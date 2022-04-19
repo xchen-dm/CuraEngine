@@ -19,7 +19,7 @@
 #include "utils/PolygonConnector.h"
 #include "utils/PolylineStitcher.h"
 #include "utils/UnionFind.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "utils/polygonUtils.h"
 
 /*!
@@ -216,7 +216,7 @@ void Infill::_generate(std::vector<VariableWidthLines>& toolpaths, Polygons& res
     case EFillMethod::CUBICSUBDIV:
         if (!mesh)
         {
-            logError("Cannot generate Cubic Subdivision infill without a mesh!\n");
+            spdlog::get("console")->error("Cannot generate Cubic Subdivision infill without a mesh!");
             break;
         }
         generateCubicSubDivInfill(result_lines, *mesh);
@@ -225,7 +225,7 @@ void Infill::_generate(std::vector<VariableWidthLines>& toolpaths, Polygons& res
     case EFillMethod::CROSS_3D:
         if (!cross_fill_provider)
         {
-            logError("Cannot generate Cross infill without a cross fill provider!\n");
+            spdlog::get("console")->error("Cannot generate Cross infill without a cross fill provider!");
             break;
         }
         generateCrossInfill(*cross_fill_provider, result_polygons, result_lines);
@@ -238,7 +238,7 @@ void Infill::_generate(std::vector<VariableWidthLines>& toolpaths, Polygons& res
         generateLightningInfill(lightning_trees, result_lines);
         break;
     default:
-        logError("Fill pattern has unknown value.\n");
+        spdlog::get("console")->error("Fill pattern has unknown value.");
         break;
     }
 

@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "floatpoint.h"
-#include "logoutput.h"
+#include <spdlog/spdlog.h>
 #include "polygon.h"
 #include "SVG.h"
 #include "ExtrusionLine.h"
@@ -66,7 +66,7 @@ SVG::SVG(std::string filename, AABB aabb, double scale, Point canvas_size, Color
     out = fopen(filename.c_str(), "w");
     if(!out)
     {
-        logError("The file %s could not be opened for writing.",filename.c_str());
+        spdlog::get("console")->error("The file {} could not be opened for writing.",filename.c_str());
     }
     if (output_is_html)
     {

@@ -5,7 +5,7 @@
 #define LIMITED_BEADING_STRATEGY_H
 
 #include "BeadingStrategy.h"
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "../utils/macros.h"
 
 namespace cura

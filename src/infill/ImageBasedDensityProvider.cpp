@@ -9,7 +9,7 @@
 #include "ImageBasedDensityProvider.h"
 #include "SierpinskiFill.h"
 #include "../utils/AABB3D.h"
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura {
 
@@ -29,7 +29,7 @@ ImageBasedDensityProvider::ImageBasedDensityProvider(const std::string filename,
         {
             reason = stbi_failure_reason();
         }
-        logError("Cannot load image %s: '%s'.\n", filename.c_str(), reason);
+        spdlog::get("console")->error("Cannot load image {}: '{}'", filename.c_str(), reason);
         std::exit(-1);
     }
     { // compute aabb

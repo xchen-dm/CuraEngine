@@ -9,7 +9,7 @@
 #include "Wireframe2gcode.h"
 #include "communication/Communication.h" //To flush g-code and layer view when we're done.
 #include "progress/Progress.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura
 {
@@ -81,21 +81,21 @@ void Scene::processMeshGroup(MeshGroup& mesh_group)
     if (empty)
     {
         Progress::messageProgress(Progress::Stage::FINISH, 1, 1); // 100% on this meshgroup
-        log("Total time elapsed %5.2fs.\n", time_keeper_total.restart());
+        spdlog::get("console")->info("Total time elapsed {}s.", time_keeper_total.restart());
         return;
     }
 
     if (mesh_group.settings.get<bool>("wireframe_enabled"))
     {
-        log("Starting Neith Weaver...\n");
+        spdlog::get("console")->info("Starting Neith Weaver...");
 
         Weaver weaver;
         weaver.weave(&mesh_group);
         
-        log("Starting Neith Gcode generation...\n");
+        spdlog::get("console")->info("Starting Neith Gcode generation...");
         Wireframe2gcode gcoder(weaver, fff_processor->gcode_writer.gcode);
         gcoder.writeGCode();
-        log("Finished Neith Gcode generation...\n");
+        spdlog::get("console")->info("Finished Neith Gcode generation...");
     }
     else //Normal operation (not wireframe).
     {
@@ -113,7 +113,7 @@ void Scene::processMeshGroup(MeshGroup& mesh_group)
     Progress::messageProgress(Progress::Stage::FINISH, 1, 1); // 100% on this meshgroup
     Application::getInstance().communication->flushGCode();
     Application::getInstance().communication->sendOptimizedLayerData();
-    log("Total time elapsed %5.2fs.\n", time_keeper_total.restart());
+    spdlog::get("console")->info("Total time elapsed {} s.", time_keeper_total.restart());
 }
 
 } //namespace cura

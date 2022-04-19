@@ -2,7 +2,7 @@
 //CuraEngine is released under the terms of the AGPLv3 or higher.
 
 #include "FlowTempGraph.h"
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura
 {
@@ -19,7 +19,7 @@ double FlowTempGraph::getTemp(const double flow, const Temperature material_prin
     }
     if (flow < data.front().flow)
     {
-        logWarning("Warning! Flow too low!\n"); // TODO
+        spdlog::get("console")->warn("Warning! Flow too low!"); // TODO
         return data.front().temp;
     }
     const Datum* last_datum = &data.front();
@@ -33,7 +33,7 @@ double FlowTempGraph::getTemp(const double flow, const Temperature material_prin
         last_datum = &datum;
     }
 
-    logWarning("Warning! Flow too high!\n"); // TODO
+    spdlog::get("console")->warn("Warning! Flow too high!"); // TODO
     return data.back().temp;
 }
 

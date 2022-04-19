@@ -7,7 +7,7 @@
 #include "Slice.h"
 #include "settings/FlowTempGraph.h"
 #include "settings/types/Ratio.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura 
 {
@@ -112,7 +112,7 @@ Preheat::WarmUpResult Preheat::getWarmUpPointAfterCoolDown(double time_window, u
 
     if (result.heating_time > time_window || result.heating_time < 0.0)
     {
-        logWarning("getWarmUpPointAfterCoolDown returns result outside of the time window!");
+        spdlog::get("console")->warn("getWarmUpPointAfterCoolDown returns result outside of the time window!");
     }
     return result;
 }
@@ -184,7 +184,7 @@ Preheat::CoolDownResult Preheat::getCoolDownPointAfterWarmUp(double time_window,
 
     if (result.cooling_time > time_window || result.cooling_time < 0.0)
     {
-        logWarning("getCoolDownPointAfterWarmUp returns result outside of the time window!");
+        spdlog::get("console")->warn("getCoolDownPointAfterWarmUp returns result outside of the time window!");
     }
     return result;
 }

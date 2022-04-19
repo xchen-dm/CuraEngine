@@ -45,7 +45,7 @@
 #include "settings/types/LayerIndex.h"
 #include "utils/algorithm.h"
 #include "utils/gettime.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "utils/math.h"
 
 
@@ -79,7 +79,7 @@ size_t FffPolygonGenerator::getDraftShieldLayerCount(const size_t total_layers) 
         case DraftShieldHeightLimitation::LIMITED:
             return std::max((coord_t)0, (mesh_group_settings.get<coord_t>("draft_shield_height") - mesh_group_settings.get<coord_t>("layer_height_0")) / mesh_group_settings.get<coord_t>("layer_height") + 1);
         default:
-            logWarning("A draft shield height limitation option was added without implementing the new option in getDraftShieldLayerCount.");
+            spdlog::get("console")->warn("A draft shield height limitation option was added without implementing the new option in getDraftShieldLayerCount.");
             return total_layers;
     }
 }
@@ -92,7 +92,7 @@ bool FffPolygonGenerator::sliceModel(MeshGroup* meshgroup, TimeKeeper& timeKeepe
     storage.model_max = meshgroup->max();
     storage.model_size = storage.model_max - storage.model_min;
 
-    log("Slicing model...\n");
+    spdlog::get("console")->info("Slicing model...");
 
     const Settings& mesh_group_settings = Application::getInstance().current_slice->scene.current_mesh_group->settings;
 
@@ -103,7 +103,7 @@ bool FffPolygonGenerator::sliceModel(MeshGroup* meshgroup, TimeKeeper& timeKeepe
     coord_t initial_layer_thickness = mesh_group_settings.get<coord_t>("layer_height_0");
     if (initial_layer_thickness <= 0)
     {
-        logError("Initial layer height %i is disallowed.\n", initial_layer_thickness);
+        spdlog::get("console")->error("Initial layer height {} is disallowed.", initial_layer_thickness);
         return false;
     }
 
@@ -111,7 +111,7 @@ bool FffPolygonGenerator::sliceModel(MeshGroup* meshgroup, TimeKeeper& timeKeepe
     const coord_t layer_thickness = mesh_group_settings.get<coord_t>("layer_height");
     if(layer_thickness <= 0)
     {
-        logError("Layer height %i is disallowed.\n", layer_thickness);
+        spdlog::get("console")->error("Layer height {} is disallowed.", layer_thickness);
         return false;
     }
 
@@ -178,7 +178,7 @@ bool FffPolygonGenerator::sliceModel(MeshGroup* meshgroup, TimeKeeper& timeKeepe
                     }
                     break;
                 default:
-                    logError("Unknown slicing tolerance. Did you forget to add a case here?");
+                    spdlog::get("console")->error("Unknown slicing tolerance. Did you forget to add a case here?");
                     return false;
             }
         }
@@ -380,7 +380,7 @@ void FffPolygonGenerator::slices2polygons(SliceDataStorage& storage, TimeKeeper&
         removeEmptyFirstLayers(storage, storage.print_layer_count); // changes storage.print_layer_count!
     }
 
-    log("Layer count: %i\n", storage.print_layer_count);
+    spdlog::get("console")->info("Layer count: {}", storage.print_layer_count);
 
     //layerparts2HTML(storage, "output/output.html");
 
@@ -402,7 +402,7 @@ void FffPolygonGenerator::slices2polygons(SliceDataStorage& storage, TimeKeeper&
     }
     if (storage.print_layer_count == 0)
     {
-        log("Stopping process because there are no non-empty layers.\n");
+        spdlog::get("console")->info("Stopping process because there are no non-empty layers.");
         return;
     }
 
@@ -413,28 +413,28 @@ void FffPolygonGenerator::slices2polygons(SliceDataStorage& storage, TimeKeeper&
     storage.primeTower.generatePaths(storage);
     storage.primeTower.subtractFromSupport(storage);
 
-    logDebug("Processing ooze shield\n");
+    spdlog::get("console")->debug("Processing ooze shield");
     processOozeShield(storage);
 
-    logDebug("Processing draft shield\n");
+    spdlog::get("console")->debug("Processing draft shield");
     processDraftShield(storage);
 
     // This catches a special case in which the models are in the air, and then
     // the adhesion mustn't be calculated.
     if (!isEmptyLayer(storage, 0) || storage.primeTower.enabled)
     {
-        log("Processing platform adhesion\n");
+        spdlog::get("console")->info("Processing platform adhesion");
         processPlatformAdhesion(storage);
     }
 
-    logDebug("Meshes post-processing\n");
+    spdlog::get("console")->debug("Meshes post-processing");
     // meshes post processing
     for (SliceMeshStorage& mesh : storage.meshes)
     {
         processDerivedWallsSkinInfill(mesh);
     }
 
-    logDebug("Processing gradual support\n");
+    spdlog::get("console")->debug("Processing gradual support");
     // generate gradual support
     AreaSupport::generateSupportInfillFeatures(storage);
 }
@@ -466,7 +466,7 @@ void FffPolygonGenerator::processBasicWallsSkinInfill(SliceDataStorage& storage,
     // Use a signed type for the loop counter so MSVC compiles (because it uses OpenMP 2.0, an old version).
     for (int layer_number = 0; layer_number < static_cast<int>(mesh.layers.size()); layer_number++)
     {
-        logDebug("Processing insets for layer %i of %i\n", layer_number, mesh_layer_count);
+        spdlog::get("console")->debug("Processing insets for layer {} of {}", layer_number, mesh_layer_count);
         processWalls(mesh, layer_number);
 #ifdef _OPENMP
         if (omp_get_thread_num() == 0)
@@ -525,7 +525,7 @@ void FffPolygonGenerator::processBasicWallsSkinInfill(SliceDataStorage& storage,
         // Use a signed type for the loop counter so MSVC compiles (because it uses OpenMP 2.0, an old version).
         for (int layer_number = 0; layer_number < static_cast<int>(mesh.layers.size()); layer_number++)
         {
-            logDebug("Processing skins and infill layer %i of %i\n", layer_number, mesh_layer_count);
+            spdlog::get("console")->debug("Processing skins and infill layer {} of {}", layer_number, mesh_layer_count);
             if (!mesh_group_settings.get<bool>("magic_spiralize") || layer_number < static_cast<int>(mesh_max_initial_bottom_layer_count))    //Only generate up/downskin and infill for the first X layers when spiralize is choosen.
             {
                 processSkinsAndInfill(mesh, layer_number, process_infill);
@@ -694,7 +694,7 @@ void FffPolygonGenerator::processDerivedWallsSkinInfill(SliceMeshStorage& mesh)
         {
             if (!cross_subdivision_spec_image_file.empty() && cross_subdivision_spec_image_file != " ")
             {
-                logError("Cannot find density image \'%s\'.", cross_subdivision_spec_image_file.c_str());
+                spdlog::get("console")->error("Cannot find density image \'{}\'.", cross_subdivision_spec_image_file.c_str());
             }
             mesh.cross_fill_provider = new SierpinskiFillProvider(mesh.bounding_box, mesh.settings.get<coord_t>("infill_line_distance"), mesh.settings.get<coord_t>("infill_line_width"));
         }
@@ -778,7 +778,7 @@ void FffPolygonGenerator::removeEmptyFirstLayers(SliceDataStorage& storage, size
 
     if (n_empty_first_layers > 0)
     {
-        log("Removing %d layers because they are empty\n", n_empty_first_layers);
+        spdlog::get("console")->info("Removing {} layers because they are empty", n_empty_first_layers);
         const coord_t layer_height = Application::getInstance().current_slice->scene.current_mesh_group->settings.get<coord_t>("layer_height");
         for (SliceMeshStorage& mesh : storage.meshes)
         {

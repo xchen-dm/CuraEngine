@@ -20,7 +20,7 @@
 #include "../Slice.h"
 #include "../utils/getpath.h"
 #include "../utils/FMatrix4x3.h" //For the mesh_rotation_matrix setting.
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura
 {
@@ -63,7 +63,7 @@ void CommandLine::sendPrintTimeMaterialEstimates() const
 {
     std::vector<Duration> time_estimates = FffProcessor::getInstance()->getTotalPrintTimePerFeature();
     double sum = std::accumulate(time_estimates.begin(), time_estimates.end(), 0.0);
-    log("Total print time: %5.3fs\n", sum);
+    spdlog::get("console")->info("Total print time: {}", sum);
 
     sum = 0.0;
     for (size_t extruder_nr = 0; extruder_nr < Application::getInstance().current_slice->scene.extruders.size(); extruder_nr++)
@@ -117,7 +117,7 @@ void CommandLine::sliceNext()
                 {
                     try
                     {
-                        log("Loaded from disk in %5.3fs\n", FffProcessor::getInstance()->time_keeper.restart());
+                        spdlog::get("console")->info("Loaded from disk in {}", FffProcessor::getInstance()->time_keeper.restart());
 
                         mesh_group_index++;
                         FffProcessor::getInstance()->time_keeper.restart();
@@ -128,13 +128,13 @@ void CommandLine::sliceNext()
                         //Catch all exceptions.
                         //This prevents the "something went wrong" dialogue on Windows to pop up on a thrown exception.
                         //Only ClipperLib currently throws exceptions. And only in the case that it makes an internal error.
-                        logError("Unknown exception!\n");
+                        spdlog::get("console")->error("Unknown exception!");
                         exit(1);
                     }
                 }
                 else
                 {
-                    logError("Unknown option: %s\n", argument.c_str());
+                    spdlog::get("console")->error("Unknown option: {}", argument.c_str());
                 }
             }
             else //Starts with "-" but not with "--".
@@ -144,7 +144,7 @@ void CommandLine::sliceNext()
                 {
                     case 'v':
                     {
-                        increaseVerboseLevel();
+                        spdlog::get("console")->set_level(spdlog::level::debug);
                         break;
                     }
 #ifdef _OPENMP
@@ -158,7 +158,7 @@ void CommandLine::sliceNext()
 #endif //_OPENMP
                     case 'p':
                     {
-                        enableProgressLogging();
+                        //enableProgressLogging();
                         break;
                     }
                     case 'j':
@@ -166,13 +166,13 @@ void CommandLine::sliceNext()
                         argument_index++;
                         if (argument_index >= arguments.size())
                         {
-                            logError("Missing JSON file with -j argument.");
+                            spdlog::get("console")->error("Missing JSON file with -j argument.");
                             exit(1);
                         }
                         argument = arguments[argument_index];
                         if (loadJSON(argument, *last_settings))
                         {
-                            logError("Failed to load JSON file: %s\n", argument.c_str());
+                            spdlog::get("console")->error("Failed to load JSON file: {}", argument.c_str());
                             exit(1);
                         }
 
@@ -209,7 +209,7 @@ void CommandLine::sliceNext()
                         argument_index++;
                         if (argument_index >= arguments.size())
                         {
-                            logError("Missing model file with -l argument.");
+                            spdlog::get("console")->error("Missing model file with -l argument.");
                             exit(1);
                         }
                         argument = arguments[argument_index];
@@ -218,7 +218,7 @@ void CommandLine::sliceNext()
 
                         if (!loadMeshIntoMeshGroup(&slice.scene.mesh_groups[mesh_group_index], argument.c_str(), transformation, last_extruder->settings))
                         {
-                            logError("Failed to load model: %s. (error number %d)\n", argument.c_str(), errno);
+                            spdlog::get("console")->error("Failed to load model: {}. (error number {})", argument.c_str(), errno);
                             exit(1);
                         }
                         else
@@ -232,13 +232,13 @@ void CommandLine::sliceNext()
                         argument_index++;
                         if (argument_index >= arguments.size())
                         {
-                            logError("Missing output file with -o argument.");
+                            spdlog::get("console")->error("Missing output file with -o argument.");
                             exit(1);
                         }
                         argument = arguments[argument_index];
                         if (!FffProcessor::getInstance()->setTargetFile(argument.c_str()))
                         {
-                            logError("Failed to open %s for output.\n", argument.c_str());
+                            spdlog::get("console")->error("Failed to open {} for output.", argument.c_str());
                             exit(1);
                         }
                         break;
@@ -255,7 +255,7 @@ void CommandLine::sliceNext()
                         argument_index++;
                         if (argument_index >= arguments.size())
                         {
-                            logError("Missing setting name and value with -s argument.");
+                            spdlog::get("console")->error("Missing setting name and value with -s argument.");
                             exit(1);
                         }
                         argument = arguments[argument_index];
@@ -263,7 +263,7 @@ void CommandLine::sliceNext()
                         std::string key = argument.substr(0, value_position);
                         if (value_position == std::string::npos)
                         {
-                            logError("Missing value in setting argument: -s %s", argument.c_str());
+                            spdlog::get("console")->error("Missing value in setting argument: -s {}", argument.c_str());
                             exit(1);
                         }
                         std::string value = argument.substr(value_position + 1);
@@ -272,7 +272,7 @@ void CommandLine::sliceNext()
                     }
                     default:
                     {
-                        logError("Unknown option: -%c\n", argument[1]);
+                        spdlog::get("console")->error("Unknown option: -{}", argument[1]);
                         Application::getInstance().printCall();
                         Application::getInstance().printHelp();
                         exit(1);
@@ -283,7 +283,7 @@ void CommandLine::sliceNext()
         }
         else
         {
-            logError("Unknown option: %s\n", argument.c_str());
+            spdlog::get("console")->error("Unknown option: {}", argument.c_str());
             Application::getInstance().printCall();
             Application::getInstance().printHelp();
             exit(1);
@@ -297,7 +297,7 @@ void CommandLine::sliceNext()
     {
 #endif //DEBUG
         slice.scene.mesh_groups[mesh_group_index].finalize();
-        log("Loaded from disk in %5.3fs\n", FffProcessor::getInstance()->time_keeper.restart());
+        spdlog::get("console")->info("Loaded from disk in {}", FffProcessor::getInstance()->time_keeper.restart());
 
         //Start slicing.
         slice.compute();
@@ -308,7 +308,7 @@ void CommandLine::sliceNext()
         //Catch all exceptions.
         //This prevents the "something went wrong" dialogue on Windows to pop up on a thrown exception.
         //Only ClipperLib currently throws exceptions. And only in the case that it makes an internal error.
-        logError("Unknown exception.\n");
+        spdlog::get("console")->error("Unknown exception.");
         exit(1);
     }
 #endif //DEBUG
@@ -322,7 +322,7 @@ int CommandLine::loadJSON(const std::string& json_filename, Settings& settings)
     FILE* file = fopen(json_filename.c_str(), "rb");
     if (!file)
     {
-        logError("Couldn't open JSON file: %s\n", json_filename.c_str());
+        spdlog::get("console")->error("Couldn't open JSON file: {}", json_filename.c_str());
         return 1;
     }
 
@@ -333,7 +333,7 @@ int CommandLine::loadJSON(const std::string& json_filename, Settings& settings)
     fclose(file);
     if (json_document.HasParseError())
     {
-        logError("Error parsing JSON (offset %u): %s\n", static_cast<unsigned int>(json_document.GetErrorOffset()), GetParseError_En(json_document.GetParseError()));
+        spdlog::get("console")->error("Error parsing JSON (offset {}): {}", static_cast<unsigned int>(json_document.GetErrorOffset()), GetParseError_En(json_document.GetParseError()));
         return 2;
     }
 
@@ -377,7 +377,7 @@ int CommandLine::loadJSON(const rapidjson::Document& document, const std::unorde
         std::string parent_file = findDefinitionFile(document["inherits"].GetString(), search_directories);
         if (parent_file == "")
         {
-            logError("Inherited JSON file \"%s\" not found.\n", document["inherits"].GetString());
+            spdlog::get("console")->error("Inherited JSON file \"{}\" not found.", document["inherits"].GetString());
             return 1;
         }
         int error_code = loadJSON(parent_file, settings); //Head-recursively load the settings file that we inherit from.
@@ -439,7 +439,7 @@ void CommandLine::loadJSONSettings(const rapidjson::Value& element, Settings& se
         const rapidjson::Value& setting_object = setting->value;
         if (!setting_object.IsObject())
         {
-            logError("JSON setting %s is not an object!\n", name.c_str());
+            spdlog::get("console")->error("JSON setting {} is not an object!", name.c_str());
             continue;
         }
 
@@ -451,7 +451,7 @@ void CommandLine::loadJSONSettings(const rapidjson::Value& element, Settings& se
         {
             if (!setting_object.HasMember("default_value"))
             {
-                logWarning("JSON setting %s has no default_value!\n", name.c_str());
+                spdlog::get("console")->warn("JSON setting {} has no default_value!", name.c_str());
                 continue;
             }
             const rapidjson::Value& default_value = setting_object["default_value"];
@@ -476,7 +476,7 @@ void CommandLine::loadJSONSettings(const rapidjson::Value& element, Settings& se
             }
             else
             {
-                logWarning("Unrecognized data type in JSON setting %s\n", name.c_str());
+                spdlog::get("console")->warn("Unrecognized data type in JSON setting {}", name.c_str());
                 continue;
             }
             settings.add(name, value_string);
@@ -495,7 +495,7 @@ const std::string CommandLine::findDefinitionFile(const std::string& definition_
             return candidate;
         }
     }
-    logError("Couldn't find definition file with ID: %s\n", definition_id.c_str());
+    spdlog::get("console")->error("Couldn't find definition file with ID: {}", definition_id.c_str());
     return std::string("");
 }
 

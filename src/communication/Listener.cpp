@@ -6,7 +6,7 @@
 #include <Arcus/Error.h> //To process error codes.
 
 #include "Listener.h"
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura
 {
@@ -25,11 +25,11 @@ void Listener::error(const Arcus::Error& error)
 {
     if (error.getErrorCode() == Arcus::ErrorCode::Debug)
     {
-        log("%s\n", error.getErrorMessage().c_str());
+        spdlog::get("console")->debug(error.getErrorMessage().c_str());
     }
     else
     {
-        logError("%s\n", error.getErrorMessage().c_str());
+        spdlog::get("console")->error(error.getErrorMessage().c_str());
     }
 }
 

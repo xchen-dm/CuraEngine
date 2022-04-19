@@ -15,7 +15,7 @@
 #include "pathPlanning/Comb.h"
 #include "pathPlanning/CombPaths.h"
 #include "settings/types/Ratio.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "utils/polygonUtils.h"
 #include "utils/linearAlg2D.h"
 #include "WipeScriptConfig.h"
@@ -562,7 +562,7 @@ void LayerPlan::addPolygon(ConstPolygonRef polygon, int start_idx, const bool ba
     }
     else 
     {
-        logWarning("WARNING: line added as polygon! (LayerPlan)\n");
+        spdlog::get("console")->warn("WARNING: line added as polygon! (LayerPlan)");
     }
 }
 
@@ -786,7 +786,7 @@ void LayerPlan::addWall(ConstPolygonRef wall, int start_idx, const Settings& set
     //TODO: Deprecated in favor of ExtrusionJunction version below.
     if (wall.size() < 3)
     {
-        logWarning("WARNING: point, or line added as (polygon) wall sequence! (LayerPlan)\n");
+        spdlog::get("console")->warn("WARNING: point, or line added as (polygon) wall sequence! (LayerPlan)");
     }
 
     constexpr size_t dummy_perimeter_id = 0;  // <-- Here, don't care about which perimeter any more.
@@ -1020,7 +1020,7 @@ void LayerPlan::addWall(const ExtrusionLine& wall, int start_idx, const Settings
     }
     else
     {
-        logWarning("WARNING: point added as wall sequence! (LayerPlan)\n");
+        spdlog::get("console")->warn("WARNING: point added as wall sequence! (LayerPlan)");
     }
 }
 

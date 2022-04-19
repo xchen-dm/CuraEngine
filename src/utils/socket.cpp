@@ -12,7 +12,7 @@
 #endif
 
 #include "socket.h"
-#include "logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura
 {
@@ -118,7 +118,7 @@ void ClientSocket::recvAll(void* data, int length)
         }
         if (n < 0)
         {
-            cura::logError("ClientSocket::recvAll error...");
+            spdlog::get("console")->error("ClientSocket::recvAll error...");
             close();
             return;
         }

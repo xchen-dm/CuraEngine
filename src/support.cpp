@@ -25,7 +25,7 @@
 #include "settings/types/Angle.h" //To compute overhang distance from the angle.
 #include "settings/types/Ratio.h"
 #include "utils/algorithm.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "utils/math.h"
 
 namespace cura
@@ -515,7 +515,7 @@ Polygons AreaSupport::join(const SliceDataStorage& storage, const Polygons& supp
                 adhesion_size = 0;
                 break;
             default: //Also use 0.
-                log("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
+                spdlog::get("console")->info("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
                 break;
         }
         machine_volume_border = machine_volume_border.offset(-adhesion_size);
@@ -732,7 +732,7 @@ void AreaSupport::precomputeCrossInfillTree(SliceDataStorage& storage)
         {
             if(cross_subdisivion_spec_image_file != "")
             {
-                logError("Cannot find density image \'%s\'.", cross_subdisivion_spec_image_file.c_str());
+                spdlog::get("console")->error("Cannot find density image \'{}\'.", cross_subdisivion_spec_image_file.c_str());
             }
             storage.support.cross_fill_provider = new SierpinskiFillProvider(aabb, infill_extruder.settings.get<coord_t>("support_line_distance"), infill_extruder.settings.get<coord_t>("support_line_width"));
         }

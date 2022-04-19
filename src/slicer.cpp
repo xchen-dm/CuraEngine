@@ -11,7 +11,7 @@
 #include "settings/EnumSettings.h"
 #include "settings/types/LayerIndex.h"
 #include "utils/gettime.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "utils/SparsePointGridInclusive.h"
 
 
@@ -813,10 +813,10 @@ Slicer::Slicer(Mesh* i_mesh, const coord_t thickness, const size_t slice_layer_c
 
     buildSegments(*mesh, zbbox, slicing_tolerance, layers);
 
-    log("slice of mesh took %.3f seconds\n", slice_timer.restart());
+    spdlog::get("console")->info("slice of mesh took {} seconds", slice_timer.restart());
 
     makePolygons(*i_mesh, slicing_tolerance, layers);
-    log("slice make polygons took %.3f seconds\n", slice_timer.restart());
+    spdlog::get("console")->info("slice make polygons took {} seconds", slice_timer.restart());
 }
 
 void Slicer::buildSegments

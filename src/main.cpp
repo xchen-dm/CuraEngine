@@ -7,7 +7,7 @@
     #include <sys/resource.h> //For setpriority.
 #endif
 #include "Application.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura
 {
@@ -16,7 +16,7 @@ namespace cura
 void signal_FPE(int n)
 {
     (void)n;
-    logError("Arithmetic exception.\n");
+    spdlog::get("console")->error("Arithmetic exception.");
     exit(1);
 }
 

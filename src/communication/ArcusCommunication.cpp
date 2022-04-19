@@ -18,7 +18,7 @@
 #include "../Slice.h" //To process slices.
 #include "../settings/types/LayerIndex.h" //To point to layers.
 #include "../settings/types/Velocity.h" //To send to layer view how fast stuff is printing.
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "../utils/polygon.h"
 
 namespace cura
@@ -286,7 +286,7 @@ ArcusCommunication::ArcusCommunication()
 
 ArcusCommunication::~ArcusCommunication()
 {
-    log("Closing connection.\n");
+    spdlog::get("console")->info("Closing connection.");
     private_data->socket->close();
 }
 
@@ -306,13 +306,13 @@ void ArcusCommunication::connect(const std::string& ip, const uint16_t port)
     private_data->socket->registerMessageType(&cura::proto::SlicingFinished::default_instance());
     private_data->socket->registerMessageType(&cura::proto::SettingExtruder::default_instance());
 
-    log("Connecting to %s:%i\n", ip.c_str(), port);
+    spdlog::get("console")->info("Connecting to {}:{}", ip.c_str(), port);
     private_data->socket->connect(ip, port);
     while (private_data->socket->getState() != Arcus::SocketState::Connected && private_data->socket->getState() != Arcus::SocketState::Error)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(private_data->millisecUntilNextTry)); //Wait until we're connected. Check every XXXms.
     }
-    log("Connected to %s:%i\n", ip.c_str(), port);
+    spdlog::get("console")->info("Connected to {}:{}", ip.c_str(), port);
 }
 
 // On the one hand, don't expose the socket for normal use, but on the other, we need to mock it for unit-tests.
@@ -370,7 +370,7 @@ void ArcusCommunication::sendFinishedSlicing() const
 {
     std::shared_ptr<proto::SlicingFinished> done_message = std::make_shared<proto::SlicingFinished>();
     private_data->socket->sendMessage(done_message);
-    logDebug("Sent slicing finished message.\n");
+    spdlog::get("console")->debug("Sent slicing finished message.");
 }
 
 void ArcusCommunication::sendLayerComplete(const LayerIndex& layer_nr, const coord_t& z, const coord_t& thickness)
@@ -396,11 +396,11 @@ void ArcusCommunication::sendOptimizedLayerData()
     {
         return;
     }
-    log("Sending %d layers.", data.current_layer_count);
+    spdlog::get("console")->info("Sending {} layers.", data.current_layer_count);
 
     for (std::pair<const int, std::shared_ptr<proto::LayerOptimized>> entry : data.slice_data) //Note: This is in no particular order!
     {
-        logDebug("Sending layer data for layer %i of %i.\n", entry.first, data.slice_data.size());
+        spdlog::get("console")->debug("Sending layer data for layer {} of {}", entry.first, data.slice_data.size());
         private_data->socket->sendMessage(entry.second); //Send the actual layers.
     }
     data.sliced_objects = 0;
@@ -424,7 +424,7 @@ void ArcusCommunication::sendPolygons(const PrintFeatureType& type, const Polygo
 
 void ArcusCommunication::sendPrintTimeMaterialEstimates() const
 {
-    logDebug("Sending print time and material estimates.\n");
+    spdlog::get("console")->debug("Sending print time and material estimates.");
     std::shared_ptr<proto::PrintTimeMaterialEstimates> message = std::make_shared<proto::PrintTimeMaterialEstimates>();
 
     std::vector<Duration> time_estimates = FffProcessor::getInstance()->getTotalPrintTimePerFeature();
@@ -449,7 +449,7 @@ void ArcusCommunication::sendPrintTimeMaterialEstimates() const
     }
 
     private_data->socket->sendMessage(message);
-    logDebug("Done sending print time and material estimates.\n");
+    spdlog::get("console")->debug("Done sending print time and material estimates.");
 }
 
 void ArcusCommunication::sendProgress(const float& progress) const
@@ -489,7 +489,7 @@ void ArcusCommunication::sliceNext()
     {
         return;
     }
-    logDebug("Received a Slice message.\n");
+    spdlog::get("console")->debug("Received a Slice message.");
 
     Slice slice(slice_message->object_lists().size());
     Application::getInstance().current_slice = &slice;
@@ -517,7 +517,7 @@ void ArcusCommunication::sliceNext()
     {
         private_data->readMeshGroupMessage(mesh_group_message);
     }
-    logDebug("Done reading Slice message.\n");
+    spdlog::get("console")->debug("Done reading Slice message.");
 
     if (!slice.scene.mesh_groups.empty())
     {

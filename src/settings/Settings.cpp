@@ -21,7 +21,7 @@
 #include "../ExtruderTrain.h"
 #include "../Slice.h"
 #include "../utils/FMatrix4x3.h"
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "../utils/string.h" //For Escaped.
 #include "../BeadingStrategy/BeadingStrategyFactory.h"
 
@@ -64,7 +64,7 @@ template<> std::string Settings::get<std::string>(const std::string& key) const
         return parent->get<std::string>(key);
     }
 
-    logError("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
+    spdlog::get("console")->error("Trying to retrieve setting with no value given: '{}'", key.c_str());
     std::exit(2);
 }
 
@@ -197,7 +197,7 @@ template<> FlowTempGraph Settings::get<FlowTempGraph>(const std::string& key) co
         }
         catch (const std::invalid_argument& e)
         {
-            logError("Couldn't read 2D graph element [%s,%s] in setting '%s'. Ignored.\n", first_substring.c_str(), second_substring.c_str(), key.c_str());
+            spdlog::get("console")->error("Couldn't read 2D graph element [{},{}] in setting '{}'. Ignored.", first_substring.c_str(), second_substring.c_str(), key.c_str());
         }
     }
 
@@ -225,7 +225,7 @@ template<> FMatrix4x3 Settings::get<FMatrix4x3>(const std::string& key) const
     std::regex_match(value_string.c_str(), sub_matches, point_matrix_regex);
     if (sub_matches.size() != 10) //One match for the whole string, nine for the cells.
     {
-        logWarning("Mesh transformation matrix could not be parsed!\n\tFormat should be [[f,f,f], [f,f,f], [f,f,f]] allowing whitespace anywhere in between.\n\tWhile what was given was \"%s\".\n", value_string.c_str());
+        spdlog::get("console")->warn("Mesh transformation matrix could not be parsed! Format should be [[f,f,f], [f,f,f], [f,f,f]] allowing whitespace anywhere in between. While what was given was \"{}\".", value_string.c_str());
         return result; //Standard matrix ([[1,0,0], [0,1,0], [0,0,1]]).
     }
 
@@ -592,7 +592,7 @@ template<> std::vector<double> Settings::get<std::vector<double>>(const std::str
             }
             catch (const std::invalid_argument& e)
             {
-                logError("Couldn't read floating point value (%s) in setting '%s'. Ignored.\n", value.c_str(), key.c_str());
+                spdlog::get("console")->error("Couldn't read floating point value ({}) in setting '{}'. Ignored.", value.c_str(), key.c_str());
             }
         }
     }
@@ -651,7 +651,7 @@ std::string Settings::getWithoutLimiting(const std::string& key) const
     }
     else
     {
-        logError("Trying to retrieve setting with no value given: '%s'\n", key.c_str());
+        spdlog::get("console")->error("Trying to retrieve setting with no value given: '{}'", key.c_str());
         std::exit(2);
     }
 }

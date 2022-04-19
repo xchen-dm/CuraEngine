@@ -15,7 +15,7 @@
 #include "communication/Communication.h" //To write g-code output.
 #include "progress/Progress.h"
 #include "utils/math.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura 
 {
@@ -335,7 +335,7 @@ void Wireframe2gcode::handle_segment(WeaveConnectionPart& part, unsigned int seg
             go_down(part, segment_idx);
             break;
         case WeaveSegmentType::FLAT:
-            logWarning("Warning: flat piece in wire print connection.\n");
+            spdlog::get("console")->warn("Warning: flat piece in wire print connection.");
             break;
         case WeaveSegmentType::UP:
             if (strategy == STRATEGY_KNOT)
@@ -350,7 +350,7 @@ void Wireframe2gcode::handle_segment(WeaveConnectionPart& part, unsigned int seg
             }
             break;
         case WeaveSegmentType::DOWN_AND_FLAT:
-            logError("Down and flat move in non-horizontal connection!");
+            spdlog::get("console")->error("Down and flat move in non-horizontal connection!");
             break;
     }
 }
@@ -408,7 +408,7 @@ void Wireframe2gcode::handle_roof_segment(WeaveConnectionPart& part, unsigned in
             gcode.writeDelay(roof_outer_delay);
             break;
         case WeaveSegmentType::FLAT:
-            logError("Flat move in connection!");
+            spdlog::get("console")->error("Flat move in connection!");
             break;
     }
 

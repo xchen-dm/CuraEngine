@@ -9,7 +9,7 @@
 #include "linearAlg2D.h"
 #include "polygonUtils.h"
 #include "SparsePointGridInclusive.h"
-#include "../utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "../infill.h"
 
 #ifdef DEBUG
@@ -675,7 +675,7 @@ ClosestPolygonPoint PolygonUtils::ensureInsideOrOutside(const Polygons& polygons
                     catch(...)
                     {
                     }
-                    logError("Clipper::offset failed. See generated debug.html!\n\tBlack is original\n\tBlue is offsetted polygon\n");
+                    spdlog::get("console")->error("Clipper::offset failed. See generated debug.html!\n\tBlack is original\n\tBlue is offsetted polygon");
 #endif
                     return ClosestPolygonPoint();
                 }

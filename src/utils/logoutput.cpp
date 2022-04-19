@@ -7,7 +7,7 @@
 #ifdef _OPENMP
     #include <omp.h>
 #endif // _OPENMP
-#include "logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura {
 

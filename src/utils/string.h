@@ -8,7 +8,7 @@
 #include <cstdio> // sprintf
 #include <sstream> // ostringstream
 
-#include "logoutput.h"
+#include <spdlog/spdlog.h>
 
 namespace cura
 {
@@ -44,11 +44,11 @@ static inline void writeInt2mm(const int32_t coord, std::ostream& ss)
 #ifdef DEBUG
     if (char_count + 1 >= int(buffer_size)) // + 1 for the null character
     {
-        logError("Cannot write %ld to buffer of size %i", coord, buffer_size);
+        spdlog::get("console")->error("Cannot write {} to buffer of size {}", coord, buffer_size);
     }
     if (char_count < 0)
     {
-        logError("Encoding error while writing %ld", coord);
+        spdlog::get("console")->error("Encoding error while writing {}", coord);
     }
 #endif // DEBUG
     int end_pos = char_count; // the first character not to write any more
@@ -131,11 +131,11 @@ static inline void writeDoubleToStream(const unsigned int precision, const doubl
 #ifdef DEBUG
     if (char_count + 1 >= int(buffer_size)) // + 1 for the null character
     {
-        logError("Cannot write %f to buffer of size %i", coord, buffer_size);
+        spdlog::get("console")->error("Cannot write {} to buffer of size {}", coord, buffer_size);
     }
     if (char_count < 0)
     {
-        logError("Encoding error while writing %f", coord);
+        spdlog::get("console")->error("Encoding error while writing {}", coord);
     }
 #endif // DEBUG
     if (char_count <= 0)

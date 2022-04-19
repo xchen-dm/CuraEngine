@@ -3,7 +3,7 @@
 
 #include "ExtrusionSegment.h"
 
-#include "logoutput.h"
+#include <spdlog/spdlog.h>
 #include "macros.h"
 
 namespace cura
@@ -37,7 +37,7 @@ Polygons ExtrusionSegment::toPolygons(bool reduced)
     assert(alpha < M_PI + 0.0001);
     if(alpha <= -M_PI || alpha >= M_PI)
     {
-        RUN_ONCE(logWarning("Line joint slope is out of bounds (should be between -pi and +pi): %f", alpha));
+        RUN_ONCE(spdlog::get("console")->warn("Line joint slope is out of bounds (should be between -pi and +pi): {}", alpha));
     }
     
     float dir = std::atan(vec.Y / static_cast<float>(vec.X));

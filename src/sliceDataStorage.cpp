@@ -12,7 +12,7 @@
 #include "infill/SubDivCube.h" // For the destructor
 #include "infill/DensityProvider.h" // for destructor
 #include "utils/math.h" //For PI.
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 
 
 namespace cura
@@ -622,7 +622,7 @@ Polygon SliceDataStorage::getMachineBorder(bool adhesion_offset) const
             adhesion_size = 0;
             break;
         default: //Also use 0.
-            log("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
+            spdlog::get("console")->info("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
             break;
     }
     return border.offset(-adhesion_size)[0];

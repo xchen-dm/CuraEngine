@@ -10,7 +10,7 @@
 #include "utils/floatpoint.h" //To accept incoming meshes with floating point vertices.
 #include "utils/FMatrix4x3.h" //To transform the input meshes for shrinkage compensation and to align in command line mode.
 #include "utils/gettime.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "utils/string.h"
 
 namespace cura
@@ -181,7 +181,7 @@ bool loadMeshSTL_binary(Mesh* mesh, const char* filename, const FMatrix4x3& matr
     }
     if (reported_face_count != face_count)
     {
-        logWarning("Face count reported by file (%s) is not equal to actual face count (%s). File could be corrupt!\n", std::to_string(reported_face_count).c_str(), std::to_string(face_count).c_str());
+        spdlog::get("console")->warn("Face count reported by file ({}) is not equal to actual face count ({}). File could be corrupt!", std::to_string(reported_face_count).c_str(), std::to_string(face_count).c_str());
     }
 
     //For each face read:
@@ -276,11 +276,11 @@ bool loadMeshIntoMeshGroup(MeshGroup* meshgroup, const char* filename, const FMa
         if (loadMeshSTL(&mesh, filename, transformation)) //Load it! If successful...
         {
             meshgroup->meshes.push_back(mesh);
-            log("loading '%s' took %.3f seconds\n", filename, load_timer.restart());
+            spdlog::get("console")->info("loading '{}' took {} seconds", filename, load_timer.restart());
             return true;
         }
     }
-    logWarning("Unable to recognize the extension of the file. Currently only .stl and .STL are supported.");
+    spdlog::get("console")->warn("Unable to recognize the extension of the file. Currently only .stl and .STL are supported.");
     return false;
 }
 

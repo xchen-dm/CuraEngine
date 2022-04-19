@@ -12,7 +12,7 @@
 #include "settings/types/Ratio.h"
 #include "utils/algorithm.h"
 #include "utils/IntPoint.h" //To normalize vectors.
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "utils/math.h" //For round_up_divide and PI.
 #include "utils/MinimumSpanningTree.h" //For connecting the correct nodes together to form an efficient tree.
 #include "utils/polygon.h" //For splitting polygons into parts.

@@ -5,7 +5,7 @@
 #include "FffGcodeWriter.h"
 #include "InsetOrderOptimizer.h"
 #include "LayerPlan.h"
-#include "utils/logoutput.h"
+#include <spdlog/spdlog.h>
 #include "WallToolPaths.h"
 
 namespace cura
