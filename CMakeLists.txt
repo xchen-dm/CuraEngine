@@ -144,6 +144,7 @@ set(engine_SRCS # Except main.cpp.
         src/utils/SquareGrid.cpp
         src/utils/ToolpathVisualizer.cpp
         src/utils/VoronoiUtils.cpp
+        src/utils/Format.h
         )
 
 # List of tests. For each test there must be a file tests/${NAME}.cpp.
