@@ -5,8 +5,8 @@ message(STATUS "Generating compile commands to ${CMAKE_CURRENT_BINARY_DIR}/compi
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Use C++17 Standard
-message(STATUS "Setting C++17 support with extensions off and standard required")
-set(CMAKE_CXX_STANDARD 17)
+message(STATUS "Setting C++20 support with extensions off and standard required")
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
