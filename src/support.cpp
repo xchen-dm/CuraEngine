@@ -7,6 +7,8 @@
 #include <fstream> // ifstream.good()
 
 #include <spdlog/spdlog.h>
+#include <utils/Logger.h>
+#include "utils/Format.h"
 
 #ifdef _OPENMP
     #include <omp.h>
@@ -581,7 +583,8 @@ Polygons AreaSupport::join(const SliceDataStorage& storage, const Polygons& supp
     // dist_from_lower_layer may be up to max_dist_from_lower_layer (see below), but that value may be extremely high
     const AngleDegrees max_smoothing_angle = 135; // maximum angle of inner corners to be smoothed
     joined = joined.smooth_outward(max_smoothing_angle, smoothing_distance);
-
+    auto vtk = std::dynamic_pointer_cast<logger::cura_logger>(spdlog::get("vtk"));
+    vtk->log(spdlog::level::info, joined);
     return joined;
 }
 

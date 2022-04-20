@@ -1,6 +1,7 @@
 #include <memory>
 
 #include "utils/Logger.h"
+#include "utils/Sink.h"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>
@@ -21,7 +22,7 @@ void init()
         log_file = "/mnt/projects/ultimaker/cura/curaengine/curaengine.log";
     }
     auto async_file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file);
-    auto async_vtk = std::make_shared<spdlog::sinks::basic_file_sink_mt>("curaengine.vtu");
+    auto async_vtk = std::make_shared<logger::sinks::vtk_sync_mt>();
     spdlog::init_thread_pool(8192, 1); // Queue with 8192 items and 1 backing thread
 
     auto logger = spdlog::stdout_color_mt<spdlog::async_factory>("default");
@@ -43,6 +44,12 @@ void init()
     auto gcodeexport = spdlog::stdout_color_mt<spdlog::async_factory>("gcodeexport");
     gcodeexport->sinks().push_back(async_file_sink);
     gcodeexport->set_level(spdlog::level::warn);
+
+//    auto vtk = spdlog::create_async<logger::sinks::vtk_sync_mt>("vtk");
+    auto vtk = std::make_shared<logger::cura_logger>("vtk");
+    vtk->sinks().push_back(async_vtk);
+    vtk->set_level(spdlog::level::debug);
+    spdlog::register_logger(vtk);
 
     spdlog::set_default_logger(logger);
 

@@ -145,6 +145,8 @@ set(engine_SRCS # Except main.cpp.
         src/utils/VoronoiUtils.cpp
         src/utils/Format.h
         src/utils/Logger.cpp
+        src/utils/Sink.h
+        src/utils/Concepts.h
         )
 
 # List of tests. For each test there must be a file tests/${NAME}.cpp.
