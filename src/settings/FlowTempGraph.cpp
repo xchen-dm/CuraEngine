@@ -19,7 +19,7 @@ double FlowTempGraph::getTemp(const double flow, const Temperature material_prin
     }
     if (flow < data.front().flow)
     {
-        spdlog::get("console")->warn("Warning! Flow too low!"); // TODO
+        spdlog::warn("Warning! Flow too low!"); // TODO
         return data.front().temp;
     }
     const Datum* last_datum = &data.front();
@@ -33,7 +33,7 @@ double FlowTempGraph::getTemp(const double flow, const Temperature material_prin
         last_datum = &datum;
     }
 
-    spdlog::get("console")->warn("Warning! Flow too high!"); // TODO
+    spdlog::warn("Warning! Flow too high!"); // TODO
     return data.back().temp;
 }
 

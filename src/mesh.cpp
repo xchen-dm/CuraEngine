@@ -170,10 +170,10 @@ int Mesh::getFaceIdxWithPoints(int idx0, int idx1, int notFaceIdx, int notFaceVe
 
     if (candidateFaces.size() == 0)
     {
-        spdlog::get("console")->debug("Couldn't find face connected to face {}", notFaceIdx);
+        spdlog::debug("Couldn't find face connected to face {}", notFaceIdx);
         if (!has_disconnected_faces)
         {
-            spdlog::get("console")->warn("Mesh has disconnected faces!");
+            spdlog::warn("Mesh has disconnected faces!");
         }
         has_disconnected_faces = true;
         return -1;
@@ -183,10 +183,10 @@ int Mesh::getFaceIdxWithPoints(int idx0, int idx1, int notFaceIdx, int notFaceVe
 
     if (candidateFaces.size() % 2 == 0)
     {
-        spdlog::get("console")->debug("Warning! Edge with uneven number of faces connecting it!({})", candidateFaces.size()+1);
+        spdlog::debug("Warning! Edge with uneven number of faces connecting it!({})", candidateFaces.size()+1);
         if (!has_disconnected_faces)
         {
-            spdlog::get("console")->warn("Mesh has disconnected faces!");
+            spdlog::warn("Mesh has disconnected faces!");
         }
         has_disconnected_faces = true;
     }
@@ -200,7 +200,7 @@ int Mesh::getFaceIdxWithPoints(int idx0, int idx1, int notFaceIdx, int notFaceVe
 
     if (n0.vSize() <= 0)
     {
-        spdlog::get("console")->debug("Face {} has zero area!", notFaceIdx);
+        spdlog::debug("Face {} has zero area!", notFaceIdx);
     }
 
     double smallestAngle = 1000; // more then 2 PI (impossible angle)
@@ -225,10 +225,10 @@ int Mesh::getFaceIdxWithPoints(int idx0, int idx1, int notFaceIdx, int notFaceVe
 
         if (angle == 0)
         {
-            spdlog::get("console")->debug("Overlapping faces: face {} and face {}.", notFaceIdx, candidateFace);
+            spdlog::debug("Overlapping faces: face {} and face {}.", notFaceIdx, candidateFace);
             if (!has_overlapping_faces)
             {
-                spdlog::get("console")->warn("Mesh has overlapping faces!");
+                spdlog::warn("Mesh has overlapping faces!");
             }
             has_overlapping_faces = true;
         }
@@ -240,10 +240,10 @@ int Mesh::getFaceIdxWithPoints(int idx0, int idx1, int notFaceIdx, int notFaceVe
     }
     if (bestIdx < 0)
     {
-        spdlog::get("console")->debug("Couldn't find face connected to face {}.", notFaceIdx);
+        spdlog::debug("Couldn't find face connected to face {}.", notFaceIdx);
         if (!has_disconnected_faces)
         {
-            spdlog::get("console")->warn("Mesh has disconnected faces!");
+            spdlog::warn("Mesh has disconnected faces!");
         }
         has_disconnected_faces = true;
     }

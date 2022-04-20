@@ -216,7 +216,7 @@ void Infill::_generate(std::vector<VariableWidthLines>& toolpaths, Polygons& res
     case EFillMethod::CUBICSUBDIV:
         if (!mesh)
         {
-            spdlog::get("console")->error("Cannot generate Cubic Subdivision infill without a mesh!");
+            spdlog::error("Cannot generate Cubic Subdivision infill without a mesh!");
             break;
         }
         generateCubicSubDivInfill(result_lines, *mesh);
@@ -225,7 +225,7 @@ void Infill::_generate(std::vector<VariableWidthLines>& toolpaths, Polygons& res
     case EFillMethod::CROSS_3D:
         if (!cross_fill_provider)
         {
-            spdlog::get("console")->error("Cannot generate Cross infill without a cross fill provider!");
+            spdlog::error("Cannot generate Cross infill without a cross fill provider!");
             break;
         }
         generateCrossInfill(*cross_fill_provider, result_polygons, result_lines);
@@ -238,7 +238,7 @@ void Infill::_generate(std::vector<VariableWidthLines>& toolpaths, Polygons& res
         generateLightningInfill(lightning_trees, result_lines);
         break;
     default:
-        spdlog::get("console")->error("Fill pattern has unknown value.");
+        spdlog::error("Fill pattern has unknown value.");
         break;
     }
 

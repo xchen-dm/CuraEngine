@@ -813,10 +813,10 @@ Slicer::Slicer(Mesh* i_mesh, const coord_t thickness, const size_t slice_layer_c
 
     buildSegments(*mesh, zbbox, slicing_tolerance, layers);
 
-    spdlog::get("console")->info("slice of mesh took {} seconds", slice_timer.restart());
+    spdlog::info("slice of mesh took {} seconds", slice_timer.restart());
 
     makePolygons(*i_mesh, slicing_tolerance, layers);
-    spdlog::get("console")->info("slice make polygons took {} seconds", slice_timer.restart());
+    spdlog::info("slice make polygons took {} seconds", slice_timer.restart());
 }
 
 void Slicer::buildSegments

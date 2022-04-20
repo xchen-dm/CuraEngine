@@ -16,7 +16,7 @@ namespace cura
 void signal_FPE(int n)
 {
     (void)n;
-    spdlog::get("console")->error("Arithmetic exception.");
+    spdlog::error("Arithmetic exception.");
     exit(1);
 }
 

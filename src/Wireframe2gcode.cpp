@@ -335,7 +335,7 @@ void Wireframe2gcode::handle_segment(WeaveConnectionPart& part, unsigned int seg
             go_down(part, segment_idx);
             break;
         case WeaveSegmentType::FLAT:
-            spdlog::get("console")->warn("Warning: flat piece in wire print connection.");
+            spdlog::warn("Warning: flat piece in wire print connection.");
             break;
         case WeaveSegmentType::UP:
             if (strategy == STRATEGY_KNOT)
@@ -350,7 +350,7 @@ void Wireframe2gcode::handle_segment(WeaveConnectionPart& part, unsigned int seg
             }
             break;
         case WeaveSegmentType::DOWN_AND_FLAT:
-            spdlog::get("console")->error("Down and flat move in non-horizontal connection!");
+            spdlog::error("Down and flat move in non-horizontal connection!");
             break;
     }
 }
@@ -408,7 +408,7 @@ void Wireframe2gcode::handle_roof_segment(WeaveConnectionPart& part, unsigned in
             gcode.writeDelay(roof_outer_delay);
             break;
         case WeaveSegmentType::FLAT:
-            spdlog::get("console")->error("Flat move in connection!");
+            spdlog::error("Flat move in connection!");
             break;
     }
 

@@ -25,11 +25,11 @@ void Listener::error(const Arcus::Error& error)
 {
     if (error.getErrorCode() == Arcus::ErrorCode::Debug)
     {
-        spdlog::get("console")->debug(error.getErrorMessage().c_str());
+        spdlog::debug(error.getErrorMessage().c_str());
     }
     else
     {
-        spdlog::get("console")->error(error.getErrorMessage().c_str());
+        spdlog::error(error.getErrorMessage().c_str());
     }
 }
 

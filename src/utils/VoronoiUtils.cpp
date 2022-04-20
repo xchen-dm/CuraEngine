@@ -49,7 +49,7 @@ Point VoronoiUtils::getSourcePoint(const vd_t::cell_type& cell, const std::vecto
     assert(cell.contains_point());
     if(!cell.contains_point())
     {
-        spdlog::get("console")->warn("Voronoi cell doesn't contain a source point!");
+        spdlog::warn("Voronoi cell doesn't contain a source point!");
     }
     switch (cell.source_category())
     {
@@ -76,7 +76,7 @@ PolygonsPointIndex VoronoiUtils::getSourcePointIndex(const vd_t::cell_type& cell
     assert(cell.contains_point());
     if(!cell.contains_point())
     {
-        spdlog::get("console")->warn("Voronoi cell doesn't contain a source point!");
+        spdlog::warn("Voronoi cell doesn't contain a source point!");
     }
     assert(cell.source_category() != boost::polygon::SOURCE_CATEGORY_SINGLE_POINT);
     switch (cell.source_category())
@@ -108,7 +108,7 @@ const VoronoiUtils::Segment& VoronoiUtils::getSourceSegment(const vd_t::cell_typ
     assert(cell.contains_segment());
     if(!cell.contains_segment())
     {
-        spdlog::get("console")->warn("Voronoi cell doesn't contain a source segment!");
+        spdlog::warn("Voronoi cell doesn't contain a source segment!");
     }
     return segments[cell.source_index() - points.size()];
 }
@@ -166,7 +166,7 @@ std::vector<Point> VoronoiUtils::discretizeParabola(const Point& p, const Segmen
     assert(!(add_marking_start && add_marking_end) || add_apex);
     if(add_marking_start && add_marking_end && !add_apex)
     {
-        spdlog::get("console")->warn("Failing to discretize parabola! Must add an apex or one of the endpoints.");
+        spdlog::warn("Failing to discretize parabola! Must add an apex or one of the endpoints.");
     }
     
     const coord_t step_count = static_cast<coord_t>(static_cast<float>(std::abs(ex - sx)) / approximate_step_size + 0.5);

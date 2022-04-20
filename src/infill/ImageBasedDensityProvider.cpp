@@ -29,7 +29,7 @@ ImageBasedDensityProvider::ImageBasedDensityProvider(const std::string filename,
         {
             reason = stbi_failure_reason();
         }
-        spdlog::get("console")->error("Cannot load image {}: '{}'", filename.c_str(), reason);
+        spdlog::error("Cannot load image {}: '{}'", filename.c_str(), reason);
         std::exit(-1);
     }
     { // compute aabb

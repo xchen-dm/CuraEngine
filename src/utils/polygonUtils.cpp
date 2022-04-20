@@ -675,7 +675,7 @@ ClosestPolygonPoint PolygonUtils::ensureInsideOrOutside(const Polygons& polygons
                     catch(...)
                     {
                     }
-                    spdlog::get("console")->error("Clipper::offset failed. See generated debug.html!\n\tBlack is original\n\tBlue is offsetted polygon");
+                    spdlog::error("Clipper::offset failed. See generated debug.html!\n\tBlack is original\n\tBlue is offsetted polygon");
 #endif
                     return ClosestPolygonPoint();
                 }

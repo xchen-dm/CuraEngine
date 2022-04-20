@@ -286,7 +286,7 @@ ArcusCommunication::ArcusCommunication()
 
 ArcusCommunication::~ArcusCommunication()
 {
-    spdlog::get("console")->info("Closing connection.");
+    spdlog::info("Closing connection.");
     private_data->socket->close();
 }
 
@@ -306,13 +306,13 @@ void ArcusCommunication::connect(const std::string& ip, const uint16_t port)
     private_data->socket->registerMessageType(&cura::proto::SlicingFinished::default_instance());
     private_data->socket->registerMessageType(&cura::proto::SettingExtruder::default_instance());
 
-    spdlog::get("console")->info("Connecting to {}:{}", ip.c_str(), port);
+    spdlog::info("Connecting to {}:{}", ip.c_str(), port);
     private_data->socket->connect(ip, port);
     while (private_data->socket->getState() != Arcus::SocketState::Connected && private_data->socket->getState() != Arcus::SocketState::Error)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(private_data->millisecUntilNextTry)); //Wait until we're connected. Check every XXXms.
     }
-    spdlog::get("console")->info("Connected to {}:{}", ip.c_str(), port);
+    spdlog::info("Connected to {}:{}", ip.c_str(), port);
 }
 
 // On the one hand, don't expose the socket for normal use, but on the other, we need to mock it for unit-tests.
@@ -370,7 +370,7 @@ void ArcusCommunication::sendFinishedSlicing() const
 {
     std::shared_ptr<proto::SlicingFinished> done_message = std::make_shared<proto::SlicingFinished>();
     private_data->socket->sendMessage(done_message);
-    spdlog::get("console")->debug("Sent slicing finished message.");
+    spdlog::debug("Sent slicing finished message.");
 }
 
 void ArcusCommunication::sendLayerComplete(const LayerIndex& layer_nr, const coord_t& z, const coord_t& thickness)
@@ -396,11 +396,11 @@ void ArcusCommunication::sendOptimizedLayerData()
     {
         return;
     }
-    spdlog::get("console")->info("Sending {} layers.", data.current_layer_count);
+    spdlog::info("Sending {} layers.", data.current_layer_count);
 
     for (std::pair<const int, std::shared_ptr<proto::LayerOptimized>> entry : data.slice_data) //Note: This is in no particular order!
     {
-        spdlog::get("console")->debug("Sending layer data for layer {} of {}", entry.first, data.slice_data.size());
+        spdlog::debug("Sending layer data for layer {} of {}", entry.first, data.slice_data.size());
         private_data->socket->sendMessage(entry.second); //Send the actual layers.
     }
     data.sliced_objects = 0;
@@ -424,7 +424,7 @@ void ArcusCommunication::sendPolygons(const PrintFeatureType& type, const Polygo
 
 void ArcusCommunication::sendPrintTimeMaterialEstimates() const
 {
-    spdlog::get("console")->debug("Sending print time and material estimates.");
+    spdlog::debug("Sending print time and material estimates.");
     std::shared_ptr<proto::PrintTimeMaterialEstimates> message = std::make_shared<proto::PrintTimeMaterialEstimates>();
 
     std::vector<Duration> time_estimates = FffProcessor::getInstance()->getTotalPrintTimePerFeature();
@@ -449,7 +449,7 @@ void ArcusCommunication::sendPrintTimeMaterialEstimates() const
     }
 
     private_data->socket->sendMessage(message);
-    spdlog::get("console")->debug("Done sending print time and material estimates.");
+    spdlog::debug("Done sending print time and material estimates.");
 }
 
 void ArcusCommunication::sendProgress(const float& progress) const
@@ -489,7 +489,7 @@ void ArcusCommunication::sliceNext()
     {
         return;
     }
-    spdlog::get("console")->debug("Received a Slice message.");
+    spdlog::debug("Received a Slice message.");
 
     Slice slice(slice_message->object_lists().size());
     Application::getInstance().current_slice = &slice;
@@ -517,7 +517,7 @@ void ArcusCommunication::sliceNext()
     {
         private_data->readMeshGroupMessage(mesh_group_message);
     }
-    spdlog::get("console")->debug("Done reading Slice message.");
+    spdlog::debug("Done reading Slice message.");
 
     if (!slice.scene.mesh_groups.empty())
     {

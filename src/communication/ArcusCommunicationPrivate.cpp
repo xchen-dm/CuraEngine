@@ -67,7 +67,7 @@ void ArcusCommunication::Private::readExtruderSettingsMessage(const google::prot
         const int32_t extruder_nr = extruder_message.id(); //Cast from proto::int to int32_t!
         if (extruder_nr < 0 || extruder_nr >= static_cast<int32_t>(extruder_count))
         {
-            spdlog::get("console")->warn("Received extruder index that is out of range: {}", extruder_nr);
+            spdlog::warn("Received extruder index that is out of range: {}", extruder_nr);
             continue;
         }
         ExtruderTrain& extruder = slice->scene.extruders[extruder_nr]; //Extruder messages may arrive out of order, so don't iteratively get the next extruder but take the extruder_nr from this message.
@@ -102,7 +102,7 @@ void ArcusCommunication::Private::readMeshGroupMessage(const proto::ObjectList& 
 
         if (face_count <= 0)
         {
-            spdlog::get("console")->warn("Got an empty mesh. Ignoring it!");
+            spdlog::warn("Got an empty mesh. Ignoring it!");
             continue;
         }
 

@@ -81,21 +81,21 @@ void Scene::processMeshGroup(MeshGroup& mesh_group)
     if (empty)
     {
         Progress::messageProgress(Progress::Stage::FINISH, 1, 1); // 100% on this meshgroup
-        spdlog::get("console")->info("Total time elapsed {}s.", time_keeper_total.restart());
+        spdlog::info("Total time elapsed {}s.", time_keeper_total.restart());
         return;
     }
 
     if (mesh_group.settings.get<bool>("wireframe_enabled"))
     {
-        spdlog::get("console")->info("Starting Neith Weaver...");
+        spdlog::info("Starting Neith Weaver...");
 
         Weaver weaver;
         weaver.weave(&mesh_group);
         
-        spdlog::get("console")->info("Starting Neith Gcode generation...");
+        spdlog::info("Starting Neith Gcode generation...");
         Wireframe2gcode gcoder(weaver, fff_processor->gcode_writer.gcode);
         gcoder.writeGCode();
-        spdlog::get("console")->info("Finished Neith Gcode generation...");
+        spdlog::info("Finished Neith Gcode generation...");
     }
     else //Normal operation (not wireframe).
     {
@@ -113,7 +113,7 @@ void Scene::processMeshGroup(MeshGroup& mesh_group)
     Progress::messageProgress(Progress::Stage::FINISH, 1, 1); // 100% on this meshgroup
     Application::getInstance().communication->flushGCode();
     Application::getInstance().communication->sendOptimizedLayerData();
-    spdlog::get("console")->info("Total time elapsed {} s.", time_keeper_total.restart());
+    spdlog::info("Total time elapsed {} s.", time_keeper_total.restart());
 }
 
 } //namespace cura

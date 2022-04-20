@@ -129,7 +129,7 @@ void GcodeLayerThreader<T>::run()
     {
 #ifdef _OPENMP
         #pragma omp master
-        spdlog::get("console")->info("Multithreading GcodeLayerThreader with {} threads.", omp_get_num_threads());
+        spdlog::info("Multithreading GcodeLayerThreader with {} threads.", omp_get_num_threads());
 #endif // _OPENMP
         while (true)
         {

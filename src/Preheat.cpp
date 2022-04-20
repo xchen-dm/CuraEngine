@@ -112,7 +112,7 @@ Preheat::WarmUpResult Preheat::getWarmUpPointAfterCoolDown(double time_window, u
 
     if (result.heating_time > time_window || result.heating_time < 0.0)
     {
-        spdlog::get("console")->warn("getWarmUpPointAfterCoolDown returns result outside of the time window!");
+        spdlog::warn("getWarmUpPointAfterCoolDown returns result outside of the time window!");
     }
     return result;
 }
@@ -184,7 +184,7 @@ Preheat::CoolDownResult Preheat::getCoolDownPointAfterWarmUp(double time_window,
 
     if (result.cooling_time > time_window || result.cooling_time < 0.0)
     {
-        spdlog::get("console")->warn("getCoolDownPointAfterWarmUp returns result outside of the time window!");
+        spdlog::warn("getCoolDownPointAfterWarmUp returns result outside of the time window!");
     }
     return result;
 }

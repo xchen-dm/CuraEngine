@@ -59,7 +59,7 @@ void Progress::messageProgress(Progress::Stage stage, int progress_in_stage, int
     float percentage = calcOverallProgress(stage, float(progress_in_stage) / float(progress_in_stage_max));
     Application::getInstance().communication->sendProgress(percentage);
 
-//    spdlog::get("console")->info("Progress:{} {}:{} \t{}%", names[(int)stage].c_str(), progress_in_stage, progress_in_stage_max, percentage);
+//    spdlog::info("Progress:{} {}:{} \t{}%", names[(int)stage].c_str(), progress_in_stage, progress_in_stage_max, percentage);
 }
 
 void Progress::messageProgressStage(Progress::Stage stage, TimeKeeper* time_keeper)
@@ -68,7 +68,7 @@ void Progress::messageProgressStage(Progress::Stage stage, TimeKeeper* time_keep
     {
         if ((int)stage > 0)
         {
-            spdlog::get("console")->info("Progress: {} accomplished in {}", names[(int)stage - 1].c_str(), time_keeper->restart());
+            spdlog::info("Progress: {} accomplished in {}", names[(int)stage - 1].c_str(), time_keeper->restart());
         }
         else
         {
@@ -77,7 +77,7 @@ void Progress::messageProgressStage(Progress::Stage stage, TimeKeeper* time_keep
         
         if ((int)stage < (int)Stage::FINISH)
         {
-            spdlog::get("console")->info("Starting {}", names[(int)stage].c_str());
+            spdlog::info("Starting {}", names[(int)stage].c_str());
         }
     }
 }

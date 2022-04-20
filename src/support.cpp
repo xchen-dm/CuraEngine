@@ -6,6 +6,8 @@
 #include <deque>
 #include <fstream> // ifstream.good()
 
+#include <spdlog/spdlog.h>
+
 #ifdef _OPENMP
     #include <omp.h>
 #endif // _OPENMP
@@ -25,7 +27,6 @@
 #include "settings/types/Angle.h" //To compute overhang distance from the angle.
 #include "settings/types/Ratio.h"
 #include "utils/algorithm.h"
-#include <spdlog/spdlog.h>
 #include "utils/math.h"
 
 namespace cura
@@ -33,8 +34,11 @@ namespace cura
 
 bool AreaSupport::handleSupportModifierMesh(SliceDataStorage& storage, const Settings& mesh_settings, const Slicer* slicer)
 {
+    auto logger = spdlog::get("support");
+    logger->debug("handleSupportModifierMesh");
     if (!mesh_settings.get<bool>("anti_overhang_mesh") && !mesh_settings.get<bool>("support_mesh"))
     {
+        logger->debug("No anti overhang and support mesh used.");
         return false;
     }
     enum ModifierType { ANTI_OVERHANG, SUPPORT_DROP_DOWN, SUPPORT_VANILLA };
@@ -62,11 +66,13 @@ bool AreaSupport::handleSupportModifierMesh(SliceDataStorage& storage, const Set
 
 void AreaSupport::splitGlobalSupportAreasIntoSupportInfillParts(SliceDataStorage& storage, const std::vector<Polygons>& global_support_areas_per_layer, unsigned int total_layer_count)
 {
+    auto logger = spdlog::get("support");
+    logger->debug("splitGlobalSupportAreasIntoSupportInfillParts");
     if (total_layer_count == 0)
     {
+        logger->debug("Total layer count is 0, Don't split global support areas");
         return;
     }
-
     size_t min_layer = 0;
     size_t max_layer = total_layer_count - 1;
 
@@ -116,6 +122,8 @@ void AreaSupport::splitGlobalSupportAreasIntoSupportInfillParts(SliceDataStorage
 
 void AreaSupport::generateSupportInfillFeatures(SliceDataStorage& storage)
 {
+    auto logger = spdlog::get("support");
+    logger->debug("generateSupportInfillFeatures");
     AreaSupport::generateGradualSupport(storage);
 
     // combine support infill layers
@@ -167,6 +175,8 @@ void AreaSupport::generateGradualSupport(SliceDataStorage& storage)
     //  -> Note that this function only does the above, which is identifying and storing support infill areas with densities.
     //     The actual printing part is done in FffGcodeWriter.
     //
+    auto logger = spdlog::get("support");
+    logger->debug("generateGradualSupport");
     const Settings& mesh_group_settings = Application::getInstance().current_slice->scene.current_mesh_group->settings;
     const size_t total_layer_count = storage.print_layer_count;
     const ExtruderTrain& infill_extruder = mesh_group_settings.get<ExtruderTrain&>("support_infill_extruder_nr");
@@ -292,6 +302,8 @@ void AreaSupport::generateGradualSupport(SliceDataStorage& storage)
 
 void AreaSupport::combineSupportInfillLayers(SliceDataStorage& storage)
 {
+    auto logger = spdlog::get("support");
+    logger->debug("combineSupportInfillLayers");
     const Settings& mesh_group_settings = Application::getInstance().current_slice->scene.current_mesh_group->settings;
     const unsigned int total_layer_count = storage.print_layer_count;
     const coord_t layer_height = mesh_group_settings.get<coord_t>("layer_height");
@@ -390,6 +402,8 @@ void AreaSupport::combineSupportInfillLayers(SliceDataStorage& storage)
 
 void AreaSupport::cleanup(SliceDataStorage& storage)
 {
+    auto logger = spdlog::get("support");
+    logger->debug("cleanup");
     const coord_t support_line_width = Application::getInstance().current_slice->scene.current_mesh_group->settings.get<coord_t>("support_line_width");
     for (unsigned int layer_nr = 0; layer_nr < storage.support.supportLayers.size(); layer_nr++)
     {
@@ -434,6 +448,8 @@ void AreaSupport::cleanup(SliceDataStorage& storage)
 
 Polygons AreaSupport::join(const SliceDataStorage& storage, const Polygons& supportLayer_up, Polygons& supportLayer_this, const coord_t smoothing_distance)
 {
+    auto logger = spdlog::get("support");
+    logger->debug("join");
     Polygons joined;
 
     const Settings& infill_settings = Application::getInstance().current_slice->scene.current_mesh_group->settings.get<ExtruderTrain&>("support_infill_extruder_nr").settings;
@@ -515,7 +531,7 @@ Polygons AreaSupport::join(const SliceDataStorage& storage, const Polygons& supp
                 adhesion_size = 0;
                 break;
             default: //Also use 0.
-                spdlog::get("console")->info("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
+                logger->info("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
                 break;
         }
         machine_volume_border = machine_volume_border.offset(-adhesion_size);
@@ -694,6 +710,8 @@ void AreaSupport::generateSupportAreas(SliceDataStorage& storage)
 
 void AreaSupport::precomputeCrossInfillTree(SliceDataStorage& storage)
 {
+    auto logger = spdlog::get("support");
+    logger->debug("precomputeCrossInfillTree");
     const Settings& mesh_group_settings = Application::getInstance().current_slice->scene.current_mesh_group->settings;
     const ExtruderTrain& infill_extruder = mesh_group_settings.get<ExtruderTrain&>("support_infill_extruder_nr");
     const EFillMethod& support_pattern = infill_extruder.settings.get<EFillMethod>("support_pattern");
@@ -732,7 +750,7 @@ void AreaSupport::precomputeCrossInfillTree(SliceDataStorage& storage)
         {
             if(cross_subdisivion_spec_image_file != "")
             {
-                spdlog::get("console")->error("Cannot find density image \'{}\'.", cross_subdisivion_spec_image_file.c_str());
+                logger->error("Cannot find density image \'{}\'.", cross_subdisivion_spec_image_file.c_str());
             }
             storage.support.cross_fill_provider = new SierpinskiFillProvider(aabb, infill_extruder.settings.get<coord_t>("support_line_distance"), infill_extruder.settings.get<coord_t>("support_line_width"));
         }
@@ -741,8 +759,10 @@ void AreaSupport::precomputeCrossInfillTree(SliceDataStorage& storage)
 
 void AreaSupport::generateOverhangAreasForMesh(SliceDataStorage& storage, SliceMeshStorage& mesh)
 {
+    auto logger = spdlog::get("support");
     if (!mesh.settings.get<bool>("support_enable") && !mesh.settings.get<bool>("support_mesh"))
     {
+        logger->debug("No overhangs generated for mesh at Layer: {}");
         return;
     }
 
@@ -799,6 +819,7 @@ void AreaSupport::generateOverhangAreasForMesh(SliceDataStorage& storage, SliceM
  */
 void AreaSupport::generateSupportAreasForMesh(SliceDataStorage& storage, const Settings& infill_settings, const Settings& roof_settings, const Settings& bottom_settings, const size_t mesh_idx, const size_t layer_count, std::vector<Polygons>& support_areas)
 {
+    auto logger = spdlog::get("support");
     SliceMeshStorage& mesh = storage.meshes[mesh_idx];
 
     const ESupportStructure support_structure = mesh.settings.get<ESupportStructure>("support_structure");
@@ -1229,6 +1250,8 @@ void AreaSupport::moveUpFromModel(const SliceDataStorage& storage, Polygons& sta
  */
 std::pair<Polygons, Polygons> AreaSupport::computeBasicAndFullOverhang(const SliceDataStorage& storage, const SliceMeshStorage& mesh, const unsigned int layer_idx)
 {
+    auto logger = spdlog::get("support");
+    logger->debug("computeBasicAndFullOverhang for layer: {}", layer_idx);
     Polygons supportLayer_supportee = mesh.layers[layer_idx].getOutlines();
     constexpr bool no_support = false;
     constexpr bool no_prime_tower = false;
@@ -1244,6 +1267,7 @@ std::pair<Polygons, Polygons> AreaSupport::computeBasicAndFullOverhang(const Sli
     const SupportLayer& support_layer = storage.support.supportLayers[layer_idx];
     if (support_layer.anti_overhang.size())
     {
+        logger->debug("Merging anti overhang into one polygon for layer: {}", layer_idx);
         // Merge anti overhang into one polygon, otherwise overlapping polygons
         // will create opposite effect.
         Polygons merged_polygons = support_layer.anti_overhang.unionPolygons();

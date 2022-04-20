@@ -10,10 +10,8 @@
 #include "communication/ArcusCommunication.h" //To connect via Arcus to the front-end.
 #include "communication/CommandLine.h" //To use the command line to slice stuff.
 #include "progress/Progress.h"
-#include <spdlog/spdlog.h>
-#include <fmt/format.h>
-#include "spdlog/sinks/stdout_color_sinks.h"
 #include "utils/string.h" //For stringcasecompare.
+#include "utils/Logger.h"
 
 namespace cura
 {
@@ -22,8 +20,7 @@ Application::Application()
 : communication(nullptr)
 , current_slice(0)
 {
-    auto console = spdlog::stdout_color_mt("console");
-    console->set_pattern("[%H:%M:%S %z] [%n] [%^%l%$] [thread %t] %v");
+    logger::init();
 }
 
 Application::~Application()
@@ -66,7 +63,7 @@ void Application::connect()
                 switch(*str)
                 {
                 case 'v':
-                    spdlog::get("console")->set_level(spdlog::level::debug);
+                    //spdlog::set_level(spdlog::level::debug);
                     break;
 #ifdef _OPENMP
                 case 'm':
@@ -78,7 +75,7 @@ void Application::connect()
                     break;
 #endif // _OPENMP
                 default:
-                    spdlog::get("console")->error("Unknown option: {}", *str);
+                    spdlog::error("Unknown option: {}", *str);
                     printCall();
                     printHelp();
                     break;
@@ -95,12 +92,12 @@ void Application::connect()
 
 void Application::printCall() const
 {
-    spdlog::get("console")->error("Command called:");
+    spdlog::error("Command called:");
     for (size_t argument_index = 0; argument_index < argc; argument_index++)
     {
-        spdlog::get("console")->error(argv[argument_index]);
+        spdlog::error(argv[argument_index]);
     }
-    spdlog::get("console")->error("");
+    spdlog::error("");
 }
 
 void Application::printHelp() const
@@ -190,9 +187,9 @@ void Application::run(const size_t argc, char** argv)
 #pragma omp master
         {
 #ifdef _OPENMP
-            spdlog::get("console")->info("OpenMP multithreading enabled, likely number of threads to be used: {}", omp_get_num_threads());
+            spdlog::info("OpenMP multithreading enabled, likely number of threads to be used: {}", omp_get_num_threads());
 #else
-            spdlog::get("console")->info("OpenMP multithreading disabled");
+            spdlog::info("OpenMP multithreading disabled");
 #endif
         }
     }
@@ -214,7 +211,7 @@ void Application::run(const size_t argc, char** argv)
     }
     else
     {
-        spdlog::get("console")->error("Unknown command: {}", argv[1]);
+        spdlog::error("Unknown command: {}", argv[1]);
         printCall();
         printHelp();
         exit(1);

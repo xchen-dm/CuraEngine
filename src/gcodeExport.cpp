@@ -646,13 +646,13 @@ void GCodeExport::writeMoveBFB(const int x, const int y, const int z, const Velo
 {
     if (std::isinf(extrusion_mm3_per_mm))
     {
-        spdlog::get("console")->error("Extrusion rate is infinite!");
+        spdlog::error("Extrusion rate is infinite!");
         assert(false && "Infinite extrusion move!");
         std::exit(1);
     }
     if (std::isnan(extrusion_mm3_per_mm))
     {
-        spdlog::get("console")->error("Extrusion rate is not a number!");
+        spdlog::error("Extrusion rate is not a number!");
         assert(false && "NaN extrusion move!");
         std::exit(1);
     }
@@ -746,21 +746,21 @@ void GCodeExport::writeExtrusion(const coord_t x, const coord_t y, const coord_t
 #ifdef DEBUG
     if (std::isinf(extrusion_mm3_per_mm))
     {
-        spdlog::get("console")->error("Extrusion rate is infinite!");
+        spdlog::error("Extrusion rate is infinite!");
         assert(false && "Infinite extrusion move!");
         std::exit(1);
     }
 
     if (std::isnan(extrusion_mm3_per_mm))
     {
-        spdlog::get("console")->error("Extrusion rate is not a number!");
+        spdlog::error("Extrusion rate is not a number!");
         assert(false && "NaN extrusion move!");
         std::exit(1);
     }
 
     if (extrusion_mm3_per_mm < 0.0)
     {
-        spdlog::get("console")->warn("Warning! Negative extrusion move!");
+        spdlog::warn("Warning! Negative extrusion move!");
     }
 #endif
 
@@ -1400,12 +1400,12 @@ void GCodeExport::finalize(const char* endCode)
     writeCode(endCode);
     int64_t print_time = getSumTotalPrintTimes();
     int mat_0 = getTotalFilamentUsed(0);
-    spdlog::get("console")->info("Print time (s): {}", print_time);
-    spdlog::get("console")->info("Print time (hr|min|s): {}h {}m {}s", int(print_time / 60 / 60), int((print_time / 60) % 60), int(print_time % 60));
-    spdlog::get("console")->info("Filament (mm^3): {}", mat_0);
+    spdlog::info("Print time (s): {}", print_time);
+    spdlog::info("Print time (hr|min|s): {}h {}m {}s", int(print_time / 60 / 60), int((print_time / 60) % 60), int(print_time % 60));
+    spdlog::info("Filament (mm^3): {}", mat_0);
     for(int n=1; n<MAX_EXTRUDERS; n++)
         if (getTotalFilamentUsed(n) > 0)
-            spdlog::get("console")->info("Filament {}: {}", n + 1, int(getTotalFilamentUsed(n)));
+            spdlog::info("Filament {}: {}", n + 1, int(getTotalFilamentUsed(n)));
     output_stream->flush();
 }
 

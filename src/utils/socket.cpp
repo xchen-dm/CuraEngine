@@ -118,7 +118,7 @@ void ClientSocket::recvAll(void* data, int length)
         }
         if (n < 0)
         {
-            spdlog::get("console")->error("ClientSocket::recvAll error...");
+            spdlog::error("ClientSocket::recvAll error...");
             close();
             return;
         }

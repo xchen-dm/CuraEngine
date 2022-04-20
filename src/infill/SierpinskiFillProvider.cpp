@@ -47,7 +47,7 @@ Polygon SierpinskiFillProvider::generate(EFillMethod pattern, coord_t z, coord_t
     else
     {
         Polygon ret;
-        spdlog::get("console")->error("Different density sierpinski fill for different layers is not implemented yet!");
+        spdlog::error("Different density sierpinski fill for different layers is not implemented yet!");
         std::exit(-1);
         return ret;
     }

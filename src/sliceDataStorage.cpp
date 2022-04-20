@@ -622,7 +622,7 @@ Polygon SliceDataStorage::getMachineBorder(bool adhesion_offset) const
             adhesion_size = 0;
             break;
         default: //Also use 0.
-            spdlog::get("console")->info("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
+            spdlog::info("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
             break;
     }
     return border.offset(-adhesion_size)[0];
