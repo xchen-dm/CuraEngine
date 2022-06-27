@@ -23,11 +23,9 @@ if (ENABLE_ARCUS)
     message(STATUS "Building with Arcus")
 
     find_package(Arcus REQUIRED 5.0.0)
-    find_package(protobuf 3.15.0 QUIET)
-    if (NOT TARGET protobuf::protobuf)
-        find_package(Protobuf 3.15.0 REQUIRED)
-    else ()
-        add_library(Protobuf::protobuf ALIAS protobuf::protobuf)
+    find_package(Protobuf 3.15.0 REQUIRED)
+    if (NOT TARGET protobuf::libprotobuf)
+        message(FATAL_ERROR "Found no target protobuf::libprotobuf")
     endif ()
 
     protobuf_generate_cpp(engine_PB_SRCS engine_PB_HEADERS Cura.proto)
@@ -254,37 +252,36 @@ if(NOT APPLE AND ENABLE_OPENMP)
 endif()
 
 if(ENABLE_ARCUS)
-    target_link_libraries(_CuraEngine PRIVATE Arcus protobuf::protobuf)
+    target_link_libraries(_CuraEngine PRIVATE Arcus protobuf::libprotobuf)
 endif()
 
-find_package(clipper 6.4.2 QUIET)
+find_package(clipper 6.4.2 REQUIRED)
 if (NOT TARGET clipper::clipper)
-    add_library(clipper::clipper STATIC libs/clipper/clipper.cpp)
-    target_include_directories(clipper::clipper
-            PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libs/clipper/include>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-            )
+    message(FATAL_ERROR "Found no target clipper::clipper")
 endif ()
 
 find_package(rapidjson 1.1.0 QUIET)
 if (NOT TARGET rapidjson::rapidjson)
-    add_library(rapidjson::rapidjson INTERFACE)
-    target_include_directories(rapidjson::rapidjson
-            PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libs/clipper/include>
+    add_library(rapidjson INTERFACE)
+    target_include_directories(rapidjson
+            INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libs/rapidjson/include>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
             )
+    add_library(rapidjson::rapidjson ALIAS rapidjson)
 endif()
+
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(stb REQUIRED)
 
-find_package(Boost REQUIRED 1.75.0)
+find_package(Boost 1.74.0 REQUIRED)
 if (NOT TARGET Boost::boost)  # Workaround for different namespace in non Conan find_packages
     add_library(boost::boost ALIAS Boost::boost)
 endif ()
 
-target_link_libraries(_CuraEngine PRIVATE clipper::clipper rapidjson::rapidjson stb::stb boost::boost)
+target_link_libraries(_CuraEngine PRIVATE clipper::clipper rapidjson::rapidjson stb::stb Boost::boost)
 
 if (WIN32)
     message(STATUS "Using windres")
